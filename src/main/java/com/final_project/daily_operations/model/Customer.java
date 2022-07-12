@@ -8,7 +8,8 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Builder
 public class Customer {
 
@@ -19,11 +20,13 @@ public class Customer {
     private String password;
     private String firstName;
     private String lastName;
-    private String IdentificationNumber;
+    private String identificationNumber;
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "authority_id")
     private Authority authority;
     private Boolean isEnabled;
     @OneToMany(mappedBy = "customer")
     private List<Balance> balances;
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<News> news;
 }
