@@ -17,11 +17,12 @@ public class NewsService {
 
     public static final String SOMETHING_WENT_WRONG = "Something went wrong, try after few minutes";
     public static final String NO_TITLE = "No Title";
-    public static final String GET_LAST_FIVE_NEWS_FROM_DATABASE = "Get last five news from Database";
+    public static final String GET_LAST_FIVE_NEWS_FROM_DATABASE = "Get last news from Database";
     private NewsRepository newsRepository;
     private NewsServiceValidation newsServiceValidation;
 
-    public List<News> getNewsByGivenCount(Integer count){
+    public List<News> getNewsByGivenCount(Integer count) {
+        log.info("Getting last {} new from DB", count);
         List<News> lastFiveNews = newsRepository.findLastNewsByGivenCount(count);
         try {
             newsServiceValidation.isAnyNewInDBExists(lastFiveNews);

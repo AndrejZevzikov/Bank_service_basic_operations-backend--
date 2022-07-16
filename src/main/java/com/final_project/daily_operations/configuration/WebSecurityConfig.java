@@ -3,6 +3,7 @@ package com.final_project.daily_operations.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -43,12 +44,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.formLogin();
         http.authorizeHttpRequests()
-                .antMatchers("/","/news/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/","/news/**","/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/customer").permitAll()
                 .antMatchers("/admin").hasAnyAuthority("ADMIN")
                 .anyRequest()
-                .authenticated();
+                .authenticated()
+                .and()
+                .csrf().disable();
     }
 
     @Override
