@@ -25,6 +25,7 @@ public class Customer {
     @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "authority_id")
     private Authority authority;
+    @Column(name = "enabled")
     private Boolean isEnabled;
     @OneToMany(mappedBy = "customer")
     private List<Balance> balances;

@@ -23,10 +23,12 @@ public class CustomerDto {
     private String firstName;
     private String lastName;
     private String identificationNumber;
+    private String authority;
 
     public CustomerDto getCustomerDto(Customer customer) {
         return new CustomerDto(customer.getUsername(), customer.getPassword(), customer.getEmail()
-                , customer.getFirstName() ,customer.getLastName(), customer.getIdentificationNumber());
+                , customer.getFirstName() ,customer.getLastName(), customer.getIdentificationNumber()
+                ,customer.getAuthority().getAuthority());
     }
 
     public List<CustomerDto> getListOfCustomersDto(List<Customer> customers){
