@@ -1,4 +1,4 @@
-package com.final_project.daily_operations.service;
+package com.final_project.daily_operations.service.for_controller;
 
 import com.final_project.daily_operations.exception.NoNewsInDatabase;
 import com.final_project.daily_operations.model.News;

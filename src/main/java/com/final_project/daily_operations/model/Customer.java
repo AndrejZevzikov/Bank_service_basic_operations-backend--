@@ -27,8 +27,9 @@ public class Customer {
     private Authority authority;
     @Column(name = "enabled")
     private Boolean isEnabled;
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer",cascade = CascadeType.ALL)
     private List<Balance> balances;
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<News> news;
+    private String uuid;
 }

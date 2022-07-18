@@ -23,7 +23,7 @@ public class CustomerPreparedData {
         Customer customer1 = Customer.builder()
                 .firstName("John")
                 .lastName("Daw")
-                .email("john@john.lt")
+                .email("andrejzevz13@gmail.com")
                 .identificationNumber("89546621")
                 .isEnabled(Boolean.TRUE)
                 .username("Johnny123")
