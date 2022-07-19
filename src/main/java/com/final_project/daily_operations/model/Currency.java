@@ -18,8 +18,8 @@ public class Currency {
     private Long id;
     private String name;
     private String code;
-    @OneToOne(mappedBy = "currency")
-    private Balance balance;
+    @OneToMany(mappedBy = "currency")
+    private List<Balance> balances;
     @OneToMany(mappedBy = "currency")
     private List<CurrencyRate> currencyRates;
     @OneToMany(mappedBy = "currency")

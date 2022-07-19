@@ -18,7 +18,7 @@ public class Balance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String accountNumber;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "currency_id")
     private Currency currency;
     private Double amount;

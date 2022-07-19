@@ -1,5 +1,6 @@
 package com.final_project.daily_operations.service.for_controller;
 
+import com.final_project.daily_operations.constants.Constants;
 import com.final_project.daily_operations.exception.EmailDoesNotExistException;
 import com.final_project.daily_operations.exception.EmptyFieldsException;
 import com.final_project.daily_operations.exception.TakenUsernameException;
@@ -27,7 +28,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-import static com.final_project.daily_operations.constants.Constants.RECOVERY_LINK;
+import static com.final_project.daily_operations.constants.Constants.*;
 
 @Service
 @AllArgsConstructor
@@ -51,6 +52,7 @@ public class CustomerService implements UserDetailsService {
                 .amount(100.0)
                 .currency(currencyRepository.findById(1L).get())
                 .accountNumber(accountNumberGenerator.generate())
+                .customer(customer)
                 .build());
         customer.setBalances(balances);
         log.info("Saving user by username: {} and email {}", customer.getUsername(), customer.getEmail());
@@ -74,7 +76,7 @@ public class CustomerService implements UserDetailsService {
         customer.setUuid(uuidString);
         customerRepository.save(customer);
         String recoveryLink = RECOVERY_LINK + uuidString;
-        emailService.sendPasswordRecoveryLink(customer, recoveryLink);
+        emailService.sendMessage(customer, recoveryLink, RECOVERY_LINK_SUBJECT);
         log.info(String.format("For user %s send recovery url %s", customer.getUsername(), recoveryLink));
     }
 
@@ -84,7 +86,7 @@ public class CustomerService implements UserDetailsService {
         Customer customer = customerRepository.findByUuid(uuid).get();
         customer.setPassword(passwordEncoder.encode(newPassword));
         customerRepository.save(customer);
-        emailService.sendNewPassword(customer, newPassword);
+        emailService.sendMessage(customer, newPassword, NEW_PASSWORD_SUBJECT);
         log.info("For user: {} was send new password", customer.getUsername());
 
     }
