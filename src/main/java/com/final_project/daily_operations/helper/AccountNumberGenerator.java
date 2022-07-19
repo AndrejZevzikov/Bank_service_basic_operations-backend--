@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,17 +28,17 @@ public class AccountNumberGenerator {
                 .map(Balance::getAccountNumber)
                 .filter(s -> s.contains(prefix))
                 .collect(Collectors.toList());
-        if (allAccountsInThisDay.size() == 0) {
-            return preNumber + "1";
+        if (allAccountsInThisDay.size() != 0) {
+            Integer maxNumber = allAccountsInThisDay.stream()
+                    .map(s -> s.substring(11))
+                    .map(Integer::valueOf)
+                    .max(Integer::compareTo).get();
+            return preNumber + (maxNumber + 1);
         }
-        int maxNumber = allAccountsInThisDay.stream()
-                .map(s -> s.substring(10))
-                .map(Integer::getInteger)
-                .max(Integer::compareTo).get();
-        return preNumber + maxNumber + 1; //TODO antra karta generuojant meta null pinteri
+        return preNumber + "1";
     }
 
-    private String oneDigitConverterToTwoDigits(String digit){
+    private String oneDigitConverterToTwoDigits(String digit) {
         return digit.length() == 1 ? ("0" + digit) : digit;
     }
 
