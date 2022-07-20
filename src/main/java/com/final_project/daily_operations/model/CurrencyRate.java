@@ -20,7 +20,7 @@ public class CurrencyRate {
     private Long id;
     private LocalDate date;
     private Double rate;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "currency_id")
     private Currency currency;
 }

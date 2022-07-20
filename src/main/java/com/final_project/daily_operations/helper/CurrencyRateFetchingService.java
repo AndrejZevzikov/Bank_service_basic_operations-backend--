@@ -4,7 +4,6 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -13,7 +12,7 @@ import java.io.IOException;
 @AllArgsConstructor
 public class CurrencyRateFetchingService {
 
-    public String getCurrencyRates(String endpoint) throws IOException {
+    public String getCurrencyRatesXMLString(String endpoint) throws IOException {
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(endpoint)
