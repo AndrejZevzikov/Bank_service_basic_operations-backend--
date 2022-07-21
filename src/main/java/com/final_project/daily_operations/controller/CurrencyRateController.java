@@ -1,6 +1,7 @@
 package com.final_project.daily_operations.controller;
 
 import com.final_project.daily_operations.dto.CurrencyRateDto;
+import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
 import com.final_project.daily_operations.service.for_controller.CurrencyRateService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,19 +22,19 @@ import java.util.List;
 @Slf4j
 public class CurrencyRateController {
     private CurrencyRateService currencyRateService;
-    private CurrencyRateDto currencyRateDto;
+    private MapperDto mapperDto;
 
     @GetMapping
     public ResponseEntity<List<CurrencyRateDto>> getLastCurrencyRates(){
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(currencyRateDto.getListOfCurrencyRateDto(currencyRateService.getLastCurrencyRate()));
+                .body(mapperDto.toCurrencyRateDtoList(currencyRateService.getLastCurrencyRate()));
     }
 
     @GetMapping("/update")
     public ResponseEntity<List<CurrencyRateDto>> updateLastCurrencyRates() throws IOException {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(currencyRateDto.getListOfCurrencyRateDto(currencyRateService.updateLastCurrencyRates()));
+                .body(mapperDto.toCurrencyRateDtoList(currencyRateService.updateLastCurrencyRates()));
     }
 }

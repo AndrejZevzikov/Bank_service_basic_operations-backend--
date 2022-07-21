@@ -1,6 +1,5 @@
 package com.final_project.daily_operations.service.for_controller;
 
-import com.final_project.daily_operations.constants.Constants;
 import com.final_project.daily_operations.exception.EmailDoesNotExistException;
 import com.final_project.daily_operations.exception.EmptyFieldsException;
 import com.final_project.daily_operations.exception.TakenUsernameException;
@@ -47,6 +46,7 @@ public class CustomerService implements UserDetailsService {
         customerServiceValidation.isValidRegistrationInformation(customer);
         customer.setPassword(passwordEncoder.encode(customer.getPassword()));
         customer.setAuthority(authorityRepository.findByAuthority("CLIENT"));
+        customer.setIsEnabled(Boolean.TRUE);
         List<Balance> balances = new ArrayList<>();
         balances.add(Balance.builder()
                 .amount(100.0)
@@ -81,7 +81,7 @@ public class CustomerService implements UserDetailsService {
     }
 
     public void sendNewPassword(String uuid) throws UUIDExpiredOrDoesNotExistException {
-        customerServiceValidation.isUuidIsAvailable(uuid);
+        customerServiceValidation.isUuidAvailable(uuid);
         String newPassword = RandomGenerator.getRandomString(10);
         Customer customer = customerRepository.findByUuid(uuid).get();
         customer.setPassword(passwordEncoder.encode(newPassword));

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.final_project.daily_operations.constants.LithuaniaBankApi.LAST_CURRENCY_RATES;
+import static com.final_project.daily_operations.constants.LithuaniaBankApi.LAST_CURRENCY_RATES_API;
 
 @Component
 @AllArgsConstructor
@@ -30,16 +30,16 @@ public class CurrencyRuntimeService {
     public void updateCurrentCurrencyRates() throws IOException {
         log.info("Start updating currency rate");
 
-        Map<String, Double> currencyRates = currencyRateXMLMapper.getCurrencyRatesMapFromXMLString(
-                currencyRateFetchingService.getCurrencyRatesXMLString(LAST_CURRENCY_RATES));
+        Map<String, Double> currencyRatesFromApi = currencyRateXMLMapper.getCurrencyRatesMapFromXMLString(
+                currencyRateFetchingService.getCurrencyRatesXMLString(LAST_CURRENCY_RATES_API));
         List<Currency> currenciesInDB = currencyRepository.findAll();
 
         currenciesInDB.forEach(currency -> {
-            if (currencyRates.get(currency.getCode()) != null) {
+            if (currencyRatesFromApi.get(currency.getCode()) != null) {
                 CurrencyRate cr = CurrencyRate.builder()
                         .currency(currency)
                         .date(LocalDate.now())
-                        .rate(currencyRates.get(currency.getCode()))
+                        .rate(currencyRatesFromApi.get(currency.getCode()))
                         .build();
                 Optional<CurrencyRate> possibleDuplicate = currencyRateRepository
                         .getCurrencyRateByDateAndCurrencyId(cr.getDate(), cr.getCurrency());
@@ -49,7 +49,7 @@ public class CurrencyRuntimeService {
                 } else {
                     possibleDuplicate.get().setRate(cr.getRate());
                     currencyRateRepository.save(possibleDuplicate.get());
-                    log.info("Updating existing currency");
+                    log.info("Updating existing currency rate");
                 }
             }
         });

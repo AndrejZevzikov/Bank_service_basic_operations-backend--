@@ -1,10 +1,7 @@
 package com.final_project.daily_operations.dto;
 
 import com.final_project.daily_operations.model.Customer;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 @Component
 public class CustomerDto {
 
@@ -25,15 +23,4 @@ public class CustomerDto {
     private String identificationNumber;
     private String authority;
 
-    public CustomerDto getCustomerDto(Customer customer) {
-        return new CustomerDto(customer.getUsername(), customer.getPassword(), customer.getEmail()
-                , customer.getFirstName() ,customer.getLastName(), customer.getIdentificationNumber()
-                ,customer.getAuthority().getAuthority());
-    }
-
-    public List<CustomerDto> getListOfCustomersDto(List<Customer> customers){
-        return customers.stream()
-                .map(this::getCustomerDto)
-                .collect(Collectors.toList());
-    }
 }

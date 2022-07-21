@@ -38,7 +38,7 @@ public class CustomerServiceValidation {
         }
     }
 
-    public void isUuidIsAvailable(String uuid) throws UUIDExpiredOrDoesNotExistException {
+    public void isUuidAvailable(String uuid) throws UUIDExpiredOrDoesNotExistException {
         if (customerRepository.findByUuid(uuid).isEmpty()){
             throw new UUIDExpiredOrDoesNotExistException(String.format(UUID_DOES_NOT_EXISTS,uuid));
         }
