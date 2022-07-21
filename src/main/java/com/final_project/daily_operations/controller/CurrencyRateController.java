@@ -1,7 +1,6 @@
 package com.final_project.daily_operations.controller;
 
 import com.final_project.daily_operations.dto.CurrencyRateDto;
-import com.final_project.daily_operations.model.CurrencyRate;
 import com.final_project.daily_operations.service.for_controller.CurrencyRateService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +26,7 @@ public class CurrencyRateController {
     @GetMapping
     public ResponseEntity<List<CurrencyRateDto>> getLastCurrencyRates(){
         return ResponseEntity
-                .status(HttpStatus.FOUND)
+                .status(HttpStatus.OK)
                 .body(currencyRateDto.getListOfCurrencyRateDto(currencyRateService.getLastCurrencyRate()));
     }
 

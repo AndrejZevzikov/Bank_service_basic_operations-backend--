@@ -1,5 +1,6 @@
 package com.final_project.daily_operations.controller;
 
+import com.auth0.jwt.JWT;
 import com.final_project.daily_operations.dto.CustomerDto;
 import com.final_project.daily_operations.exception.EmailDoesNotExistException;
 import com.final_project.daily_operations.exception.EmptyFieldsException;
@@ -11,8 +12,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -39,9 +43,13 @@ public class CustomerController {
                 .body(customerDto.getListOfCustomersDto(customerService.getAllCustomers()));
     }
 
-    @GetMapping("/username={username}")
-    public ResponseEntity<CustomerDto> getCustomerByUsername(@PathVariable(name = "username") String username) {
-        return ResponseEntity.ok().body(customerDto.getCustomerDto(customerService.getCustomerByUsername(username)));
+    @GetMapping("/userWithToken")
+    public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) {
+        String username = JWT.decode(token).getClaim("sub").asString(); //TODO atskira klase
+        System.out.println("***** " + username);
+        return ResponseEntity
+                .ok()
+                .body(customerDto.getCustomerDto(customerService.getCustomerByUsername(username)));
     }
 
     @GetMapping("/forgot/email={email}") //TODO apsauga nuo spamo gali kiti scopai
@@ -56,10 +64,10 @@ public class CustomerController {
         return ResponseEntity.ok().build();
     }
 
-//    @GetMapping("/login")
-//    public ResponseEntity<CustomerDto> login(@RequestBody Customer customer){
-//        return ResponseEntity
-//                .status(HttpStatus.CREATED)
-//                .body(customerDto.getCustomerDto(customerService.getCustomerByUsername(customer.getUsername())));
-//    }
+    @GetMapping("/login")
+    public ResponseEntity<CustomerDto> login(@RequestBody Customer customer){
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(customerDto.getCustomerDto(customerService.getCustomerByUsername(customer.getUsername())));
+    }
 }
