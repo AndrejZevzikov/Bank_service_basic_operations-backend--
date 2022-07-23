@@ -1,8 +1,10 @@
 package com.final_project.daily_operations.mapper.mapperDto;
 
+import com.final_project.daily_operations.dto.BalanceDto;
 import com.final_project.daily_operations.dto.CurrencyRateDto;
 import com.final_project.daily_operations.dto.CustomerDto;
 import com.final_project.daily_operations.dto.NewsDto;
+import com.final_project.daily_operations.model.Balance;
 import com.final_project.daily_operations.model.CurrencyRate;
 import com.final_project.daily_operations.model.Customer;
 import com.final_project.daily_operations.model.News;
@@ -58,6 +60,20 @@ public class MapperDto {
     public List<CustomerDto> toCustomerDtoList(List<Customer> customers){
         return customers.stream()
                 .map(this::toCustomerDto)
+                .collect(Collectors.toList());
+    }
+
+    public BalanceDto toBalanceDto(Balance balance){
+        return BalanceDto.builder()
+                .accountNumber(balance.getAccountNumber())
+                .amount(balance.getAmount())
+                .currencyCode(balance.getCurrency().getCode())
+                .build();
+    }
+
+    public List<BalanceDto> toBalanceDtoList(List<Balance> balances){
+        return balances.stream()
+                .map(this::toBalanceDto)
                 .collect(Collectors.toList());
     }
 }

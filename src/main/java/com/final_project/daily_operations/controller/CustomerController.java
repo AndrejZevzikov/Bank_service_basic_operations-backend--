@@ -2,10 +2,7 @@ package com.final_project.daily_operations.controller;
 
 import com.auth0.jwt.JWT;
 import com.final_project.daily_operations.dto.CustomerDto;
-import com.final_project.daily_operations.exception.EmailDoesNotExistException;
-import com.final_project.daily_operations.exception.EmptyFieldsException;
-import com.final_project.daily_operations.exception.TakenUsernameException;
-import com.final_project.daily_operations.exception.UUIDExpiredOrDoesNotExistException;
+import com.final_project.daily_operations.exception.*;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
 import com.final_project.daily_operations.model.Customer;
 import com.final_project.daily_operations.service.for_controller.CustomerService;
@@ -47,7 +44,7 @@ public class CustomerController {
     }
 
     @GetMapping("/userWithToken")
-    public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) {
+    public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) throws UsernameDoesNotExistException {
         String username = JWT.decode(token).getClaim("sub").asString(); //TODO atskira klase
         return ResponseEntity
                 .ok()
@@ -57,7 +54,7 @@ public class CustomerController {
     @GetMapping("/forgot/email={email}") //TODO apsauga nuo spamo gali kiti scopai
     public ResponseEntity sendPasswordRecoverLink(@PathVariable(name = "email") String email) throws EmailDoesNotExistException {
         customerService.sendPasswordRecoveryLink(email);
-        return ResponseEntity.status(HttpStatus.FOUND).build();
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/recovery/{uuid}")
@@ -67,7 +64,7 @@ public class CustomerController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<CustomerDto> login(@RequestBody Customer customer){
+    public ResponseEntity<CustomerDto> login(@RequestBody Customer customer) throws UsernameDoesNotExistException {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(customer.getUsername())));

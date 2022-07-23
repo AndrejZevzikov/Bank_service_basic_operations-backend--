@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
 
@@ -56,16 +55,29 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    protected void configure(HttpSecurity http) throws Exception { //TODO kazkaip puslapiu sarasa susikurti
         CustomAuthenticationFilter customAuthenticationFilter = new CustomAuthenticationFilter(authenticationManagerBean());
         customAuthenticationFilter.setFilterProcessesUrl("/customer/login");
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeHttpRequests()
-                .antMatchers(HttpMethod.GET, "/", "/news/**", "/currency_rates", "/customer/forgot/**",
-                        "/customer/userWithToken","/customer/login/**","/customer/recovery/**").permitAll()
-                .antMatchers(HttpMethod.POST, "/customer", "customer/login/**", "/customer/save").permitAll()
-                .antMatchers(HttpMethod.GET,"/currency_rates/update").hasAnyAuthority("ADMIN")
-                .antMatchers(HttpMethod.GET,"/customer/valid").hasAnyAuthority("ADMIN","CLIENT")
+                .antMatchers(HttpMethod.GET,
+                        "/",
+                        "/news/**",
+                        "/currency_rates",
+                        "/customer/forgot/**",
+                        "/customer/userWithToken",
+                        "/customer/login/**",
+                        "/customer/recovery/**").permitAll()
+                .antMatchers(HttpMethod.GET,
+                        "/currency_rates/update",
+                        "/balance/all").hasAnyAuthority("ADMIN")
+                .antMatchers(HttpMethod.GET,
+                        "/customer/valid",
+                        "/balance/my").hasAnyAuthority("ADMIN", "CLIENT")
+                .antMatchers(HttpMethod.POST,
+                        "/customer",
+                        "customer/login/**",
+                        "/customer/save").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

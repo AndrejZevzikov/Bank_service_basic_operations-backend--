@@ -1,7 +1,6 @@
 package com.final_project.daily_operations.dto;
 
 import lombok.*;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -10,7 +9,6 @@ import java.time.LocalDateTime;
 @Builder
 @Setter
 @Getter
-@Component
 public class NewsDto {
 
     private String title;

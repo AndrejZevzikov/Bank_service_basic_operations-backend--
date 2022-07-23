@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @Builder
-@Component
 public class CustomerDto {
 
     private String username;

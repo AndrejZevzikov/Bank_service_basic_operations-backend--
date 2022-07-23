@@ -1,9 +1,6 @@
 package com.final_project.daily_operations.service.for_controller;
 
-import com.final_project.daily_operations.exception.EmailDoesNotExistException;
-import com.final_project.daily_operations.exception.EmptyFieldsException;
-import com.final_project.daily_operations.exception.TakenUsernameException;
-import com.final_project.daily_operations.exception.UUIDExpiredOrDoesNotExistException;
+import com.final_project.daily_operations.exception.*;
 import com.final_project.daily_operations.helper.AccountNumberGenerator;
 import com.final_project.daily_operations.helper.RandomGenerator;
 import com.final_project.daily_operations.model.Balance;
@@ -34,6 +31,7 @@ import static com.final_project.daily_operations.constants.Constants.*;
 @Slf4j
 public class CustomerService implements UserDetailsService {
 
+    public static final String NO_SUCH_USERNAME_IN_DATABASE = "No such Username in Database";
     private CustomerRepository customerRepository;
     private CustomerServiceValidation customerServiceValidation;
     private EmailService emailService;
@@ -63,19 +61,20 @@ public class CustomerService implements UserDetailsService {
         return customerRepository.findAll();
     }
 
-    public Customer getCustomerByUsername(String username) {
+    public Customer getCustomerByUsername(String username) throws UsernameDoesNotExistException {
         log.info("searching username: {}", username);
-        return customerRepository.findByUsername(username).get();
+        return customerRepository
+                .findByUsername(username)
+                .orElseThrow(() -> new UsernameDoesNotExistException(NO_SUCH_USERNAME_IN_DATABASE));
     }
 
     public void sendPasswordRecoveryLink(String email) throws EmailDoesNotExistException { //TODO maybe facade
-        customerServiceValidation.isEmailExists(email);
+        customerServiceValidation.isEmailExists(email); //grazint pavaliduota
         Customer customer = customerRepository.findByEmail(email).get();
-        UUID uuid = UUID.randomUUID();
-        String uuidString = uuid.toString();
-        customer.setUuid(uuidString);
+        final String uuid = UUID.randomUUID().toString();
+        customer.setUuid(uuid);
         customerRepository.save(customer);
-        String recoveryLink = RECOVERY_LINK + uuidString;
+        String recoveryLink = RECOVERY_LINK + uuid;
         emailService.sendMessage(customer, recoveryLink, RECOVERY_LINK_SUBJECT);
         log.info(String.format("For user %s send recovery url %s", customer.getUsername(), recoveryLink));
     }

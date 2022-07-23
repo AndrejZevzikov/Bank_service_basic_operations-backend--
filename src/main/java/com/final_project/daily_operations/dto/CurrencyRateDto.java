@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-@Component
 public class CurrencyRateDto {
     private String code;
     private LocalDate date;
