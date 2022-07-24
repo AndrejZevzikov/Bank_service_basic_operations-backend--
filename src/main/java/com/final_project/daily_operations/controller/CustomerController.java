@@ -39,13 +39,13 @@ public class CustomerController {
     }
 
     @GetMapping("/valid")
-    public ResponseEntity isTokenValid(@RequestHeader("Authorization") String token){
+    public ResponseEntity isTokenValid(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/userWithToken")
     public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) throws UsernameDoesNotExistException {
-        String username = JWT.decode(token).getClaim("sub").asString(); //TODO atskira klase
+        String username = JWT.decode(token).getClaim("sub").asString();
         return ResponseEntity
                 .ok()
                 .body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(username)));
@@ -68,5 +68,11 @@ public class CustomerController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(customer.getUsername())));
+    }
+
+    @GetMapping("/total_balance")
+    public ResponseEntity<Double> getTotalBalanceAmountInEuro(@RequestHeader("Authorization") String token) throws UsernameDoesNotExistException {
+        String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
+        return ResponseEntity.ok().body(customerService.getCustomerTotalAmountInEur(username));
     }
 }

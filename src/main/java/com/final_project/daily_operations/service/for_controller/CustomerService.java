@@ -6,9 +6,11 @@ import com.final_project.daily_operations.helper.RandomGenerator;
 import com.final_project.daily_operations.model.Balance;
 import com.final_project.daily_operations.model.Customer;
 import com.final_project.daily_operations.repostory.AuthorityRepository;
+import com.final_project.daily_operations.repostory.BalanceRepository;
 import com.final_project.daily_operations.repostory.CurrencyRepository;
 import com.final_project.daily_operations.repostory.CustomerRepository;
 import com.final_project.daily_operations.service.for_message.EmailService;
+import com.final_project.daily_operations.service.runtime.CurrencyConverter;
 import com.final_project.daily_operations.validation.CustomerServiceValidation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -32,6 +35,7 @@ import static com.final_project.daily_operations.constants.Constants.*;
 public class CustomerService implements UserDetailsService {
 
     public static final String NO_SUCH_USERNAME_IN_DATABASE = "No such Username in Database";
+    public static final LocalDate NOW = LocalDate.now();
     private CustomerRepository customerRepository;
     private CustomerServiceValidation customerServiceValidation;
     private EmailService emailService;
@@ -39,6 +43,8 @@ public class CustomerService implements UserDetailsService {
     private AuthorityRepository authorityRepository;
     private CurrencyRepository currencyRepository;
     private AccountNumberGenerator accountNumberGenerator;
+    private CurrencyConverter currencyConverter;
+    private BalanceRepository balanceRepository;
 
     public Customer saveNewCustomer(Customer customer) throws TakenUsernameException, EmptyFieldsException {
         customerServiceValidation.isValidRegistrationInformation(customer);
@@ -87,7 +93,14 @@ public class CustomerService implements UserDetailsService {
         customerRepository.save(customer);
         emailService.sendMessage(customer, newPassword, NEW_PASSWORD_SUBJECT);
         log.info("For user: {} was send new password", customer.getUsername());
+    }
 
+    public Double getCustomerTotalAmountInEur(String username) throws UsernameDoesNotExistException {
+        //TODO validations
+        if (getCustomerByUsername(username).getAuthority().getAuthority().equals("ADMIN")) {
+            return currencyConverter.convertBalanceByGivenDate(NOW, balanceRepository.findAll());
+        }
+        return currencyConverter.convertBalanceByGivenDate(NOW, getCustomerByUsername(username).getBalances());
     }
 
     @Override

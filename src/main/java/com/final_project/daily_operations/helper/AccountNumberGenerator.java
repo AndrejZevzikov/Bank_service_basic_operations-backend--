@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,5 +40,4 @@ public class AccountNumberGenerator {
     private String oneDigitConverterToTwoDigits(String digit) {
         return digit.length() == 1 ? ("0" + digit) : digit;
     }
-
 }

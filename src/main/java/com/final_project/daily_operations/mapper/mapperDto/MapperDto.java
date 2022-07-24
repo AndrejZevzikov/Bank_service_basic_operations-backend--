@@ -1,20 +1,17 @@
 package com.final_project.daily_operations.mapper.mapperDto;
 
-import com.final_project.daily_operations.dto.BalanceDto;
-import com.final_project.daily_operations.dto.CurrencyRateDto;
-import com.final_project.daily_operations.dto.CustomerDto;
-import com.final_project.daily_operations.dto.NewsDto;
-import com.final_project.daily_operations.model.Balance;
-import com.final_project.daily_operations.model.CurrencyRate;
-import com.final_project.daily_operations.model.Customer;
-import com.final_project.daily_operations.model.News;
+import com.final_project.daily_operations.dto.*;
+import com.final_project.daily_operations.model.*;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
+@AllArgsConstructor
 public class MapperDto {
+
 
     public CurrencyRateDto toCurrencyRateDto(CurrencyRate currencyRate){
         return CurrencyRateDto.builder()
@@ -76,4 +73,18 @@ public class MapperDto {
                 .map(this::toBalanceDto)
                 .collect(Collectors.toList());
     }
+
+    public CurrencyDto toCurrencyDto(Currency currency){
+        return CurrencyDto.builder()
+                .id(currency.getId())
+                .code(currency.getCode())
+                .build();
+    }
+
+    public List<CurrencyDto> toCurrencyDtoList(List<Currency> currencies){
+        return currencies.stream()
+                .map(this::toCurrencyDto)
+                .collect(Collectors.toList());
+    }
+
 }

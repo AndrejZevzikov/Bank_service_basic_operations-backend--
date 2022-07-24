@@ -2,6 +2,8 @@ package com.final_project.daily_operations.controller;
 
 import com.auth0.jwt.JWT;
 import com.final_project.daily_operations.dto.BalanceDto;
+import com.final_project.daily_operations.exception.DuplicateCurrencyAccountException;
+import com.final_project.daily_operations.exception.ToMuchBalanceAccountException;
 import com.final_project.daily_operations.exception.UsernameDoesNotExistException;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
 import com.final_project.daily_operations.service.for_controller.BalanceService;
@@ -22,19 +24,30 @@ public class BalanceController {
     private final BalanceService balanceService;
     private final MapperDto mapperDto;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<BalanceDto>> getAllBalances() {
-        log.info("Getting all balances");
-        return ResponseEntity.ok().body(mapperDto.toBalanceDtoList(balanceService.getAllBalances()));
-    }
-
-    @GetMapping("/my")
+    @GetMapping
     public ResponseEntity<List<BalanceDto>> getMyBalance(@RequestHeader("Authorization") String token) throws UsernameDoesNotExistException {
         log.info("getting JWT token: {}", token);
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         log.info("searching user with username: {}", username);
-        return ResponseEntity.ok().body(mapperDto.toBalanceDtoList(balanceService.getMyBalance(username)));
+        return ResponseEntity
+                .ok()
+                .body(mapperDto.toBalanceDtoList(balanceService.getBalances(username)));
     }
 
+    @PostMapping("/add/{id}")
+    public ResponseEntity<List<BalanceDto>> addNewBalance(
+            @RequestHeader("Authorization") String token,
+            @PathVariable(name = "id") Long id) throws DuplicateCurrencyAccountException, UsernameDoesNotExistException, ToMuchBalanceAccountException {
+        System.out.println("*******************");
+        String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
+        return ResponseEntity
+                .ok()
+                .body(mapperDto.toBalanceDtoList(balanceService.addNewBalance(username,id)));
+    }
+
+    @GetMapping("total/user/{id}")
+    public ResponseEntity<Double> getTotalAmount(@PathVariable(name = "id") Long id) {
+        return null;
+    }
 
 }
