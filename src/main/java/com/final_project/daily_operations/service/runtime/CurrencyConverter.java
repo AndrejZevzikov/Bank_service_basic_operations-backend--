@@ -4,6 +4,7 @@ import com.final_project.daily_operations.model.Balance;
 import com.final_project.daily_operations.model.CurrencyRate;
 import com.final_project.daily_operations.repostory.CurrencyRateRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class CurrencyConverter {
 
     private final CurrencyRateRepository currencyRateRepository;

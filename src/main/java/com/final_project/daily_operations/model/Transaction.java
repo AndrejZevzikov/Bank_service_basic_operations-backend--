@@ -19,10 +19,8 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToOne
-    private Customer payer;
-    @OneToOne
-    private Customer receiver;
+    private String payerAccountNumber;
+    private String receiverAccountNumber;
     private Double amount;
     @ManyToOne
     @JoinColumn(name = "currency_id")

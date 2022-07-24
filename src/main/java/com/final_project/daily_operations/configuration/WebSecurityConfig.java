@@ -77,7 +77,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET,
                         "/customer/valid",
                         "customer/total_balance",
-                        "/balance/my").hasAnyAuthority("ADMIN", "CLIENT")
+                        "/balance/my",
+                        "/transactions").hasAnyAuthority("ADMIN", "CLIENT")
                 .antMatchers(HttpMethod.POST,
                         "/balance/add/**").hasAnyAuthority("ADMIN", "CLIENT")
                 .anyRequest()

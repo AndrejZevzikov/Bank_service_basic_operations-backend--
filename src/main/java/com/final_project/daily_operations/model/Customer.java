@@ -3,6 +3,7 @@ package com.final_project.daily_operations.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.util.List;
 
 @Entity
@@ -18,6 +19,7 @@ public class Customer {
     private Long id;
     private String username;
     private String password;
+//    @Email
     private String email;
     private String firstName;
     private String lastName;

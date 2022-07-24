@@ -87,4 +87,20 @@ public class MapperDto {
                 .collect(Collectors.toList());
     }
 
+    public TransactionDto toTransactionDto(Transaction transaction){
+        return TransactionDto.builder()
+                .localDate(transaction.getLocalDate())
+                .payerAccountNumber(transaction.getPayerAccountNumber())
+                .receiverAccountNumber(transaction.getReceiverAccountNumber())
+                .amount(transaction.getAmount())
+                .currencyCode(transaction.getCurrency().getCode())
+                .build();
+    }
+
+    public List<TransactionDto> toTransactionDtoList(List<Transaction> transactions){
+        return transactions.stream()
+                .map(this::toTransactionDto)
+                .collect(Collectors.toList());
+    }
+
 }
