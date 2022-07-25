@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/customer")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = {"http://localhost:4200","http://localhost:8081"})
 @AllArgsConstructor
 @Slf4j
 public class CustomerController {
@@ -38,8 +38,14 @@ public class CustomerController {
                 .body(mapperDto.toCustomerDtoList(customerService.getAllCustomers()));
     }
 
+    @GetMapping("/get")
+    public ResponseEntity<CustomerDto> getCustomerWithToken(@RequestHeader("Authorization") String token) throws UsernameDoesNotExistException {
+        String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
+        return ResponseEntity.ok().body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(username)));
+    }
+
     @GetMapping("/valid")
-    public ResponseEntity isTokenValid(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<CustomerDto> isTokenValid(@RequestHeader("Authorization") String token) {
         return ResponseEntity.ok().build();
     }
 

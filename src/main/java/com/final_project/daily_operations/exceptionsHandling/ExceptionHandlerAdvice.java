@@ -13,26 +13,26 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ExceptionHandlerAdvice {
 
     @ExceptionHandler(TakenUsernameException.class)
-    public ResponseEntity handleTakenUsernameException(TakenUsernameException e) {
+    public ResponseEntity<String> handleTakenUsernameException(TakenUsernameException e) {
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
 
     @ExceptionHandler(EmptyFieldsException.class)
-    public ResponseEntity handleEmptyFieldsException(EmptyFieldsException e) {
+    public ResponseEntity<String> handleEmptyFieldsException(EmptyFieldsException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_ACCEPTABLE)
                 .body(e.getMessage());
     }
     @ExceptionHandler(EmailDoesNotExistException.class)
-    public ResponseEntity handleEmailDoesNotExists(EmailDoesNotExistException e) {
+    public ResponseEntity<String> handleEmailDoesNotExists(EmailDoesNotExistException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());
     }
     @ExceptionHandler(UUIDExpiredOrDoesNotExistException.class)
-    public ResponseEntity handleUuidDoesNotExist(UUIDExpiredOrDoesNotExistException e) {
+    public ResponseEntity<String> handleUuidDoesNotExist(UUIDExpiredOrDoesNotExistException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(e.getMessage());

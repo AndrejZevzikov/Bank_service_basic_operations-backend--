@@ -31,7 +31,7 @@ public class CurrencyConverter {
     }
 
     public Double convertBalanceByGivenDate(LocalDate date, List<Balance> balances) {
-        Double result = 0.0;
+        Double result = 0.0; //TODO stream
         for (Balance balance : balances) {
             result += convertBalanceByGivenDate(date, balance);
         }

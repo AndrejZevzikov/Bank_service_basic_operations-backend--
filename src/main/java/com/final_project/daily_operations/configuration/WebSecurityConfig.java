@@ -78,7 +78,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/customer/valid",
                         "customer/total_balance",
                         "/balance/my",
-                        "/transactions").hasAnyAuthority("ADMIN", "CLIENT")
+                        "/transactions",
+                        "/customer/get").hasAnyAuthority("ADMIN", "CLIENT")
                 .antMatchers(HttpMethod.POST,
                         "/balance/add/**").hasAnyAuthority("ADMIN", "CLIENT")
                 .anyRequest()
@@ -108,7 +109,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200","http://localhost:8081"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "access_token", "refresh_token"));
