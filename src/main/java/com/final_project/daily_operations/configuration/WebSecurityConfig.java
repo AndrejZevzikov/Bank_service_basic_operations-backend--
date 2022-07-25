@@ -66,6 +66,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/",
                         "/news/**",
                         "/currency_rates",
+                        "/currency/code/**",
                         "/currency",
                         "/customer/forgot/**",
                         "/customer/userWithToken",

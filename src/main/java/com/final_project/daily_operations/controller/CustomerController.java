@@ -39,7 +39,7 @@ public class CustomerController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<CustomerDto> getCustomerWithToken(@RequestHeader("Authorization") String token) throws UsernameDoesNotExistException {
+    public ResponseEntity<CustomerDto> getCustomerWithToken(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException {
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         return ResponseEntity.ok().body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(username)));
     }
@@ -50,7 +50,7 @@ public class CustomerController {
     }
 
     @GetMapping("/userWithToken")
-    public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) throws UsernameDoesNotExistException {
+    public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) throws ModelDoesNotExistException {
         String username = JWT.decode(token).getClaim("sub").asString();
         return ResponseEntity
                 .ok()
@@ -70,14 +70,14 @@ public class CustomerController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<CustomerDto> login(@RequestBody Customer customer) throws UsernameDoesNotExistException {
+    public ResponseEntity<CustomerDto> login(@RequestBody Customer customer) throws ModelDoesNotExistException {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(customer.getUsername())));
     }
 
     @GetMapping("/total_balance")
-    public ResponseEntity<Double> getTotalBalanceAmountInEuro(@RequestHeader("Authorization") String token) throws UsernameDoesNotExistException {
+    public ResponseEntity<Double> getTotalBalanceAmountInEuro(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException {
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         return ResponseEntity.ok().body(customerService.getCustomerTotalAmountInEur(username));
     }

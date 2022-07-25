@@ -67,11 +67,11 @@ public class CustomerService implements UserDetailsService {
         return customerRepository.findAll();
     }
 
-    public Customer getCustomerByUsername(String username) throws UsernameDoesNotExistException {
+    public Customer getCustomerByUsername(String username) throws ModelDoesNotExistException {
         log.info("searching username: {}", username);
         return customerRepository
                 .findByUsername(username)
-                .orElseThrow(() -> new UsernameDoesNotExistException(NO_SUCH_USERNAME_IN_DATABASE));
+                .orElseThrow(() -> new ModelDoesNotExistException(NO_SUCH_USERNAME_IN_DATABASE));
     }
 
     public void sendPasswordRecoveryLink(String email) throws EmailDoesNotExistException { //TODO maybe facade
@@ -95,7 +95,7 @@ public class CustomerService implements UserDetailsService {
         log.info("For user: {} was send new password", customer.getUsername());
     }
 
-    public Double getCustomerTotalAmountInEur(String username) throws UsernameDoesNotExistException {
+    public Double getCustomerTotalAmountInEur(String username) throws ModelDoesNotExistException {
         //TODO validations
         if (getCustomerByUsername(username).getAuthority().getAuthority().equals("ADMIN")) {
             return currencyConverter.convertBalanceByGivenDate(NOW, balanceRepository.findAll());

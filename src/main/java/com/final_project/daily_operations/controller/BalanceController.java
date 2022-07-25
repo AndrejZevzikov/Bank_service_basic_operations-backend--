@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.final_project.daily_operations.dto.BalanceDto;
 import com.final_project.daily_operations.exception.DuplicateCurrencyAccountException;
 import com.final_project.daily_operations.exception.ToMuchBalanceAccountException;
-import com.final_project.daily_operations.exception.UsernameDoesNotExistException;
+import com.final_project.daily_operations.exception.ModelDoesNotExistException;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
 import com.final_project.daily_operations.service.for_controller.BalanceService;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class BalanceController {
     private final MapperDto mapperDto;
 
     @GetMapping
-    public ResponseEntity<List<BalanceDto>> getMyBalance(@RequestHeader("Authorization") String token) throws UsernameDoesNotExistException {
+    public ResponseEntity<List<BalanceDto>> getMyBalance(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException {
         log.info("getting JWT token: {}", token);
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         log.info("searching user with username: {}", username);
@@ -37,7 +37,7 @@ public class BalanceController {
     @PostMapping("/add/{id}")
     public ResponseEntity<List<BalanceDto>> addNewBalance(
             @RequestHeader("Authorization") String token,
-            @PathVariable(name = "id") Long id) throws DuplicateCurrencyAccountException, UsernameDoesNotExistException, ToMuchBalanceAccountException {
+            @PathVariable(name = "id") Long id) throws DuplicateCurrencyAccountException, ModelDoesNotExistException, ToMuchBalanceAccountException {
         System.out.println("*******************");
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         return ResponseEntity

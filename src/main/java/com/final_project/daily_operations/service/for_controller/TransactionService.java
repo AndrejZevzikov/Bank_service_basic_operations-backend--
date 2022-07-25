@@ -1,11 +1,9 @@
 package com.final_project.daily_operations.service.for_controller;
 
-import com.final_project.daily_operations.exception.UsernameDoesNotExistException;
+import com.final_project.daily_operations.exception.ModelDoesNotExistException;
 import com.final_project.daily_operations.model.Balance;
-import com.final_project.daily_operations.model.Customer;
 import com.final_project.daily_operations.model.Transaction;
 import com.final_project.daily_operations.repostory.TransactionRepository;
-import jdk.dynalink.linker.LinkerServices;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +19,7 @@ public class TransactionService {
     private final CustomerService customerService;
     private final TransactionRepository transactionRepository;
 
-    public List<Transaction> getTransactions(String username) throws UsernameDoesNotExistException {
+    public List<Transaction> getTransactions(String username) throws ModelDoesNotExistException {
 
         if (customerService.getCustomerByUsername(username).getAuthority().getAuthority().equals("ADMIN")){
             return transactionRepository.findLastTransactionsByGivenCount(5);
