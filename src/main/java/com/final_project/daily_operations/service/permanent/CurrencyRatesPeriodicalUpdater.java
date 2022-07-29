@@ -14,7 +14,7 @@ import java.util.TimerTask;
 @AllArgsConstructor
 @Slf4j
 @EnableScheduling
-public class CurrencyRatesPeriodicalUpdater extends TimerTask implements PeriodicalUpdate {
+public class CurrencyRatesPeriodicalUpdater extends TimerTask  {
 
     private CurrencyRuntimeService currencyRuntimeService;
 

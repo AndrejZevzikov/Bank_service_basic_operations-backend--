@@ -26,7 +26,6 @@ public class BalanceController {
 
     @GetMapping
     public ResponseEntity<List<BalanceDto>> getMyBalance(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException {
-        log.info("getting JWT token: {}", token);
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         log.info("searching user with username: {}", username);
         return ResponseEntity
@@ -38,7 +37,6 @@ public class BalanceController {
     public ResponseEntity<List<BalanceDto>> addNewBalance(
             @RequestHeader("Authorization") String token,
             @PathVariable(name = "id") Long id) throws DuplicateCurrencyAccountException, ModelDoesNotExistException, ToMuchBalanceAccountException {
-        System.out.println("*******************");
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         return ResponseEntity
                 .ok()

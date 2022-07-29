@@ -59,7 +59,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeHttpRequests()
                 .antMatchers(HttpMethod.POST,
-                        "/customer",
                         "customer/login/**",
                         "/customer/save").permitAll()
                 .antMatchers(HttpMethod.GET,
@@ -74,7 +73,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/customer/recovery/**").permitAll()
                 .antMatchers(HttpMethod.GET,
                         "/currency_rates/update",
-                        "/balance/all").hasAnyAuthority("ADMIN")
+                        "/balance/all",
+                        "/customer/all").hasAnyAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET,
                         "/customer/valid",
                         "customer/total_balance",

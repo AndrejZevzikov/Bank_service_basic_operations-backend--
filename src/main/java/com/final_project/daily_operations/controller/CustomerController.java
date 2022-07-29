@@ -31,7 +31,7 @@ public class CustomerController {
                 .body(mapperDto.toCustomerDto(customerService.saveNewCustomer(customer)));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<CustomerDto>> getAllCustomers() {
         return ResponseEntity
                 .ok()
