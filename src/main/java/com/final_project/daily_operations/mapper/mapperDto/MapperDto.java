@@ -44,6 +44,7 @@ public class MapperDto {
 
     public CustomerDto toCustomerDto(Customer customer){
         return CustomerDto.builder()
+                .id(customer.getId())
                 .username(customer.getUsername())
                 .password(customer.getPassword())
                 .email(customer.getEmail())

@@ -39,7 +39,7 @@ public class CustomerController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<CustomerDto> getCustomerWithToken(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException {
+    public ResponseEntity<CustomerDto> getCustomerWithToken(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException, NoSuchObjectInDatabaseException {
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         return ResponseEntity.ok().body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(username)));
     }
@@ -50,7 +50,7 @@ public class CustomerController {
     }
 
     @GetMapping("/userWithToken")
-    public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) throws ModelDoesNotExistException {
+    public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) throws ModelDoesNotExistException, NoSuchObjectInDatabaseException {
         String username = JWT.decode(token).getClaim("sub").asString();
         return ResponseEntity
                 .ok()
@@ -64,21 +64,34 @@ public class CustomerController {
     }
 
     @GetMapping("/recovery/{uuid}")
-    public ResponseEntity sendNewPassword(@PathVariable(name = "uuid") String uuid) throws UUIDExpiredOrDoesNotExistException {
+    public ResponseEntity sendNewPassword(@PathVariable(name = "uuid") String uuid) throws UUIDExpiredOrDoesNotExistException, NoSuchObjectInDatabaseException {
         customerService.sendNewPassword(uuid);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/login")
-    public ResponseEntity<CustomerDto> login(@RequestBody Customer customer) throws ModelDoesNotExistException {
+    public ResponseEntity<CustomerDto> login(@RequestBody Customer customer) throws NoSuchObjectInDatabaseException {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(customer.getUsername())));
     }
 
     @GetMapping("/total_balance")
-    public ResponseEntity<Double> getTotalBalanceAmountInEuro(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException {
+    public ResponseEntity<Double> getTotalBalanceAmountInEuro(@RequestHeader("Authorization") String token) throws NoSuchObjectInDatabaseException {
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         return ResponseEntity.ok().body(customerService.getCustomerTotalAmountInEur(username));
+    }
+
+    @GetMapping("search/{phrase}")
+    public ResponseEntity<List<CustomerDto>> getFilteredCustomerListByGivenPhrase(@PathVariable(name = "phrase") String phrase){
+        return ResponseEntity
+                .ok()
+                .body(mapperDto.toCustomerDtoList(customerService.getFilteredListOfCustomers(phrase)));
+    }
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<List<CustomerDto>> deleteCustomerById(@PathVariable(name = "id")Long id) throws NoSuchObjectInDatabaseException {
+        return ResponseEntity
+                .ok()
+                .body(mapperDto.toCustomerDtoList(customerService.deleteCustomerById(id)));
     }
 }

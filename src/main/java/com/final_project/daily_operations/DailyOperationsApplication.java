@@ -15,7 +15,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootApplication
-@ComponentScan(basePackages = {"com/final_project/daily_operations/*"})
 @EntityScan(basePackages = {"com/final_project/daily_operations/*"})
 public class DailyOperationsApplication {
 

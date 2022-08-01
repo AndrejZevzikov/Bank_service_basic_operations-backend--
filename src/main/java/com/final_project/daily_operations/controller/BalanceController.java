@@ -3,6 +3,7 @@ package com.final_project.daily_operations.controller;
 import com.auth0.jwt.JWT;
 import com.final_project.daily_operations.dto.BalanceDto;
 import com.final_project.daily_operations.exception.DuplicateCurrencyAccountException;
+import com.final_project.daily_operations.exception.NoSuchObjectInDatabaseException;
 import com.final_project.daily_operations.exception.ToMuchBalanceAccountException;
 import com.final_project.daily_operations.exception.ModelDoesNotExistException;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
@@ -25,7 +26,7 @@ public class BalanceController {
     private final MapperDto mapperDto;
 
     @GetMapping
-    public ResponseEntity<List<BalanceDto>> getMyBalance(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException {
+    public ResponseEntity<List<BalanceDto>> getMyBalance(@RequestHeader("Authorization") String token) throws NoSuchObjectInDatabaseException {
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         log.info("searching user with username: {}", username);
         return ResponseEntity
@@ -36,7 +37,7 @@ public class BalanceController {
     @PostMapping("/add/{id}")
     public ResponseEntity<List<BalanceDto>> addNewBalance(
             @RequestHeader("Authorization") String token,
-            @PathVariable(name = "id") Long id) throws DuplicateCurrencyAccountException, ModelDoesNotExistException, ToMuchBalanceAccountException {
+            @PathVariable(name = "id") Long id) throws DuplicateCurrencyAccountException, ModelDoesNotExistException, ToMuchBalanceAccountException, NoSuchObjectInDatabaseException {
         String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
         return ResponseEntity
                 .ok()

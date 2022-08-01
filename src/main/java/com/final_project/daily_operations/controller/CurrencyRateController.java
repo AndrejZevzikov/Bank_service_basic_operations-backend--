@@ -20,7 +20,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @AllArgsConstructor
 @Slf4j
-public class CurrencyRateController {
+public class CurrencyRateController { //TODO charta
     private CurrencyRateService currencyRateService;
     private MapperDto mapperDto;
 

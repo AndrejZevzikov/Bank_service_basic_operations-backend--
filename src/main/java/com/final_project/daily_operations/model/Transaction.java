@@ -26,4 +26,5 @@ public class Transaction {
     @JoinColumn(name = "currency_id")
     private Currency currency;
     private LocalDate localDate;
+    private Boolean isInnerTransaction;
 }

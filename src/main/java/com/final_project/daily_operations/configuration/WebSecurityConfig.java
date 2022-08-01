@@ -70,19 +70,24 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/customer/forgot/**",
                         "/customer/userWithToken",
                         "/customer/login/**",
-                        "/customer/recovery/**").permitAll()
+                        "/customer/recovery/**"
+                        ).permitAll()
                 .antMatchers(HttpMethod.GET,
                         "/currency_rates/update",
                         "/balance/all",
-                        "/customer/all").hasAnyAuthority("ADMIN")
+                        "/customer/all",
+                        "/customer/search/**",
+                        "/customer/delete/**").hasAnyAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET,
                         "/customer/valid",
                         "customer/total_balance",
                         "/balance/my",
                         "/transactions",
-                        "/customer/get").hasAnyAuthority("ADMIN", "CLIENT")
+                        "/customer/get",
+                        "/transactions").hasAnyAuthority("ADMIN", "CLIENT")
                 .antMatchers(HttpMethod.POST,
-                        "/balance/add/**").hasAnyAuthority("ADMIN", "CLIENT")
+                        "/balance/add/**",
+                        "/transactions/pay").hasAnyAuthority("ADMIN", "CLIENT")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -119,6 +124,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-
 }
