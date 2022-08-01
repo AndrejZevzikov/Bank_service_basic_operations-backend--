@@ -1,11 +1,10 @@
 package com.final_project.daily_operations.controller;
 
-import com.auth0.jwt.JWT;
 import com.final_project.daily_operations.dto.CustomerDto;
 import com.final_project.daily_operations.exception.*;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
 import com.final_project.daily_operations.model.Customer;
-import com.final_project.daily_operations.service.for_controller.CustomerService;
+import com.final_project.daily_operations.service.modelService.CustomerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -14,14 +13,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 @RestController
 @RequestMapping("/customer")
 @CrossOrigin(origins = {"http://localhost:4200","http://localhost:8081"})
 @AllArgsConstructor
 @Slf4j
 public class CustomerController {
-    private CustomerService customerService;
-    private MapperDto mapperDto;
+    private final CustomerService customerService;
+    private final MapperDto mapperDto;
 
     @PostMapping("/save")
     public ResponseEntity<CustomerDto> saveNewCustomer(@RequestBody Customer customer)
@@ -39,9 +40,9 @@ public class CustomerController {
     }
 
     @GetMapping("/get")
-    public ResponseEntity<CustomerDto> getCustomerWithToken(@RequestHeader("Authorization") String token) throws ModelDoesNotExistException, NoSuchObjectInDatabaseException {
-        String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
-        return ResponseEntity.ok().body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(username)));
+    public ResponseEntity<CustomerDto> getCustomerWithToken(@RequestHeader(AUTHORIZATION) String token)
+            throws NoSuchObjectInDatabaseException {
+        return ResponseEntity.ok().body(mapperDto.toCustomerDto(customerService.getCustomerByToken(token)));
     }
 
     @GetMapping("/valid")
@@ -50,11 +51,11 @@ public class CustomerController {
     }
 
     @GetMapping("/userWithToken")
-    public ResponseEntity<CustomerDto> getCustomerByUsername(@RequestHeader("access_token") String token) throws ModelDoesNotExistException, NoSuchObjectInDatabaseException {
-        String username = JWT.decode(token).getClaim("sub").asString();
+    public ResponseEntity<CustomerDto> getCustomerByToken(@RequestHeader("access_token") String token)
+            throws NoSuchObjectInDatabaseException {
         return ResponseEntity
                 .ok()
-                .body(mapperDto.toCustomerDto(customerService.getCustomerByUsername(username)));
+                .body(mapperDto.toCustomerDto(customerService.getCustomerByToken(token)));
     }
 
     @GetMapping("/forgot/email={email}") //TODO apsauga nuo spamo gali kiti scopai
@@ -64,7 +65,8 @@ public class CustomerController {
     }
 
     @GetMapping("/recovery/{uuid}")
-    public ResponseEntity sendNewPassword(@PathVariable(name = "uuid") String uuid) throws UUIDExpiredOrDoesNotExistException, NoSuchObjectInDatabaseException {
+    public ResponseEntity sendNewPassword(@PathVariable(name = "uuid") String uuid)
+            throws UUIDExpiredOrDoesNotExistException, NoSuchObjectInDatabaseException {
         customerService.sendNewPassword(uuid);
         return ResponseEntity.ok().build();
     }
@@ -77,9 +79,9 @@ public class CustomerController {
     }
 
     @GetMapping("/total_balance")
-    public ResponseEntity<Double> getTotalBalanceAmountInEuro(@RequestHeader("Authorization") String token) throws NoSuchObjectInDatabaseException {
-        String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
-        return ResponseEntity.ok().body(customerService.getCustomerTotalAmountInEur(username));
+    public ResponseEntity<Double> getTotalBalanceAmountInEuro(@RequestHeader(AUTHORIZATION) String token)
+            throws NoSuchObjectInDatabaseException {
+        return ResponseEntity.ok().body(customerService.getCustomerTotalAmountInEurFromToken(token));
     }
 
     @GetMapping("search/{phrase}")

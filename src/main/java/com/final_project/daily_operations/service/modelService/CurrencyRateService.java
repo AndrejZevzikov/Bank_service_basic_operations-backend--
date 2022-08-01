@@ -1,4 +1,4 @@
-package com.final_project.daily_operations.service.for_controller;
+package com.final_project.daily_operations.service.modelService;
 
 import com.final_project.daily_operations.model.CurrencyRate;
 import com.final_project.daily_operations.repostory.CurrencyRateRepository;
@@ -14,8 +14,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CurrencyRateService {
 
-    private CurrencyRateRepository currencyRateRepository;
-    private CurrencyRuntimeService currencyRuntimeService;
+    private final CurrencyRateRepository currencyRateRepository;
+    private final CurrencyRuntimeService currencyRuntimeService;
 
     public List<CurrencyRate> getLastCurrencyRate(){//TODO validadcijos
         LocalDate lastUpdate = currencyRateRepository.getLastUpdateDate().get();

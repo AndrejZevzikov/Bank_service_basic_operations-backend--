@@ -8,5 +8,4 @@ import java.util.Optional;
 public interface CurrencyRepository extends JpaRepository<Currency,Long> {
 
     Optional<Currency> findByCode(String code);
-
 }

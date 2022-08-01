@@ -1,4 +1,4 @@
-package com.final_project.daily_operations.service.for_controller;
+package com.final_project.daily_operations.service.modelService;
 
 import com.final_project.daily_operations.exception.*;
 import com.final_project.daily_operations.helper.JwtDecoder;
@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -22,33 +23,36 @@ import java.util.stream.Collectors;
 @Slf4j
 public class TransactionService {
 
+    public static final String ADMIN = "ADMIN";
+    public static final int LAST_FIVE_TRANSACTION = 5;
     private final CustomerService customerService;
     private final TransactionRepository transactionRepository;
     private final JwtDecoder jwtDecoder;
     private final TransactionServiceValidation transactionServiceValidation;
     private final BalanceService balanceService;
 
-    public List<Transaction> getTransactions(String username) throws NoSuchObjectInDatabaseException {
-
-        if (customerService.getCustomerByUsername(username).getAuthority().getAuthority().equals("ADMIN")) {
-            return transactionRepository.findLastTransactionsByGivenCount(5);
-        }
-        List<String> accountNumbers = customerService.getCustomerByUsername(username).getBalances().stream()
-                .map(Balance::getAccountNumber)
-                .collect(Collectors.toList());
-
+    public List<Transaction> getTransactions(final String token) throws NoSuchObjectInDatabaseException {
+        Customer customer = customerService.getCustomerByUsername(jwtDecoder.getUsername(token));
         List<Transaction> transactions = new ArrayList<>();
-        accountNumbers.forEach(s ->
-                transactions.addAll(transactionRepository.findLastTransactionsByGivenCountAndCustomer(s, 5)));
 
+        if (customer.getAuthority().getAuthority().equals(ADMIN)) {
+            return transactionRepository.findLastTransactionsByGivenCount(LAST_FIVE_TRANSACTION);
+        }
+        customer.getBalances().stream()// TODO SQL IN panaudot
+                .map(Balance::getAccountNumber)
+                .forEach(s -> transactions.addAll(
+                        transactionRepository
+                                .findLastTransactionsByGivenCountAndAccountNumber(s, LAST_FIVE_TRANSACTION)));
 
         return transactions.stream()
                 .sorted(Comparator.comparing(Transaction::getLocalDate))
                 .collect(Collectors.toList());
     }
 
-    public Transaction makePayment(Transaction transaction, String token) throws NoSuchObjectInDatabaseException, NoAccessException, WrongCurrencyException, NoEnoughMoneyException {
-        Customer customer = customerService.getCustomerByUsername(jwtDecoder.getUsername(token)); //TODO gal bendra interfaca visiem exceptionams
+    @Transactional(rollbackFor = {SQLException.class})
+    public Transaction makePayment(final Transaction transaction, final String token)
+            throws NoSuchObjectInDatabaseException, InvalidBalanceException {
+        Customer customer = customerService.getCustomerByUsername(jwtDecoder.getUsername(token));
         transactionServiceValidation.isPaymentValid(transaction, customer);
         log.info("updating payer balance");
         balanceService.updatePayerBalance(transaction);

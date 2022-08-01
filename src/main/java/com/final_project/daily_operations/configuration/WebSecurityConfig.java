@@ -87,7 +87,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/transactions").hasAnyAuthority("ADMIN", "CLIENT")
                 .antMatchers(HttpMethod.POST,
                         "/balance/add/**",
-                        "/transactions/pay").hasAnyAuthority("ADMIN", "CLIENT")
+                        "/transactions").hasAnyAuthority("ADMIN", "CLIENT")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -98,7 +98,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
     }
 
     @Override

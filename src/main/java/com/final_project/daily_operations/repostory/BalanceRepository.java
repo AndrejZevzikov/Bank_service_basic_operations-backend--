@@ -10,5 +10,4 @@ import java.util.Optional;
 public interface BalanceRepository extends JpaRepository<Balance,Long> {
 
     Optional<Balance> findByAccountNumber(String accountNumber);
-
 }

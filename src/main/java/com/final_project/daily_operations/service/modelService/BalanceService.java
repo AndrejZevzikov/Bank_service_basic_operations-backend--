@@ -1,10 +1,8 @@
-package com.final_project.daily_operations.service.for_controller;
+package com.final_project.daily_operations.service.modelService;
 
-import com.final_project.daily_operations.exception.DuplicateCurrencyAccountException;
-import com.final_project.daily_operations.exception.NoSuchObjectInDatabaseException;
-import com.final_project.daily_operations.exception.ToMuchBalanceAccountException;
-import com.final_project.daily_operations.exception.ModelDoesNotExistException;
+import com.final_project.daily_operations.exception.*;
 import com.final_project.daily_operations.helper.AccountNumberGenerator;
+import com.final_project.daily_operations.helper.JwtDecoder;
 import com.final_project.daily_operations.model.Balance;
 import com.final_project.daily_operations.model.Currency;
 import com.final_project.daily_operations.model.Customer;
@@ -17,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @AllArgsConstructor
@@ -24,27 +23,30 @@ import java.util.List;
 public class BalanceService {
 
     public static final String ACCOUNT_NUMBER_IN_DATABASE_DOES_NOT_EXIST = "Account number %s in Database does not exist";
-    private BalanceRepository balanceRepository;
-    private CustomerService customerService;
-    private CurrencyRepository currencyRepository;
-    private BalanceServiceValidation balanceServiceValidation;
-    private AccountNumberGenerator accountNumberGenerator;
+    public static final String CURRENCY_DO_NOT_EXIST = "Currency with id %d doesn't exist";
+    private final BalanceRepository balanceRepository;
+    private final CustomerService customerService;
+    private final CurrencyRepository currencyRepository;
+    private final BalanceServiceValidation balanceServiceValidation;
+    private final AccountNumberGenerator accountNumberGenerator;
+    private final JwtDecoder jwtDecoder;
 
-
-    public List<Balance> getBalances(String username) throws NoSuchObjectInDatabaseException {
+    public List<Balance> getBalances(final String username) throws NoSuchObjectInDatabaseException {
         String authority = customerService.getCustomerByUsername(username).getAuthority().getAuthority();
         if (authority.equals("ADMIN")) { //TODO Authority enumas
             return balanceRepository.findAll();
         }
-        return customerService.getCustomerByUsername(username).getBalances();//TODO Efektyvumui gal custom query
+        return customerService.getCustomerByUsername(username).getBalances();
     }
 
-    public List<Balance> addNewBalance(String username, Long currencyId) throws DuplicateCurrencyAccountException, ToMuchBalanceAccountException, ModelDoesNotExistException, NoSuchObjectInDatabaseException {
-        log.info("Creating new account for user {} with currency id {}", username, currencyId);
-        Customer customer = customerService.getCustomerByUsername(username);
-        Currency currency = currencyRepository.findById(currencyId).get();
+    public List<Balance> addNewBalance(final String token, final Long currencyId) throws InvalidBalanceException, NoSuchObjectInDatabaseException {
+
+        final Customer customer = customerService.getCustomerByUsername(jwtDecoder.getUsername(token));
+        final Currency currency = currencyRepository.findById(currencyId).orElseThrow(
+                () -> new NoSuchElementException(String.format(CURRENCY_DO_NOT_EXIST, currencyId)));
+        log.info("Creating new account for user {} with currency id {}", customer.getUsername(), currencyId);
         balanceServiceValidation.isValidAddBalanceRequest(currency, customer);
-        String accountNumber = accountNumberGenerator.generate();
+        final String accountNumber = accountNumberGenerator.generate();
         balanceRepository.save(Balance.builder()
                 .customer(customer)
                 .accountNumber(accountNumber)
@@ -54,7 +56,7 @@ public class BalanceService {
         return getBalances(customer.getUsername());
     }
 
-    public Balance updatePayerBalance(Transaction transaction) throws NoSuchObjectInDatabaseException {
+    public Balance updatePayerBalance(final Transaction transaction) throws NoSuchObjectInDatabaseException {
         Balance balance = balanceRepository.findByAccountNumber(transaction.getPayerAccountNumber()).orElseThrow(
                 () -> new NoSuchObjectInDatabaseException(String.format(
                         ACCOUNT_NUMBER_IN_DATABASE_DOES_NOT_EXIST, transaction.getPayerAccountNumber())));
@@ -62,11 +64,11 @@ public class BalanceService {
         return balanceRepository.save(balance);
     }
 
-    public Balance updateReceiverBalance(Transaction transaction) throws NoSuchObjectInDatabaseException {
+    public Balance updateReceiverBalance(final Transaction transaction) throws NoSuchObjectInDatabaseException {
         Balance balance = balanceRepository.findByAccountNumber(transaction.getReceiverAccountNumber()).orElseThrow(
                 () -> new NoSuchObjectInDatabaseException(String.format(
                         ACCOUNT_NUMBER_IN_DATABASE_DOES_NOT_EXIST, transaction.getReceiverAccountNumber())));
-        balance.setAmount(balance.getAmount()+ transaction.getAmount());
+        balance.setAmount(balance.getAmount() + transaction.getAmount());
         return balanceRepository.save(balance);
     }
 }

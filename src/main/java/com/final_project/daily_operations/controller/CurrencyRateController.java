@@ -2,7 +2,7 @@ package com.final_project.daily_operations.controller;
 
 import com.final_project.daily_operations.dto.CurrencyRateDto;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
-import com.final_project.daily_operations.service.for_controller.CurrencyRateService;
+import com.final_project.daily_operations.service.modelService.CurrencyRateService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,8 +21,8 @@ import java.util.List;
 @AllArgsConstructor
 @Slf4j
 public class CurrencyRateController { //TODO charta
-    private CurrencyRateService currencyRateService;
-    private MapperDto mapperDto;
+    private final CurrencyRateService currencyRateService;
+    private final MapperDto mapperDto;
 
     @GetMapping
     public ResponseEntity<List<CurrencyRateDto>> getLastCurrencyRates(){

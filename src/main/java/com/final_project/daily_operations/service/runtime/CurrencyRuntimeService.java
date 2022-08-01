@@ -22,25 +22,20 @@ import static com.final_project.daily_operations.constants.LithuaniaBankApi.LAST
 @AllArgsConstructor
 @Slf4j
 public class CurrencyRuntimeService {
-    private CurrencyRepository currencyRepository;
-    private CurrencyRateRepository currencyRateRepository;
-    private CurrencyRateXMLMapper currencyRateXMLMapper;
-    private CurrencyRateFetchingService currencyRateFetchingService;
+    private final CurrencyRepository currencyRepository;
+    private final CurrencyRateRepository currencyRateRepository;
+    private final CurrencyRateXMLMapper currencyRateXMLMapper;
+    private final CurrencyRateFetchingService currencyRateFetchingService;
 
     public void updateCurrentCurrencyRates() throws IOException {
         log.info("Start updating currency rate");
-
         Map<String, Double> currencyRatesFromApi = currencyRateXMLMapper.getCurrencyRatesMapFromXMLString(
                 currencyRateFetchingService.getCurrencyRatesXMLString(LAST_CURRENCY_RATES_API));
         List<Currency> currenciesInDB = currencyRepository.findAll();
 
         currenciesInDB.forEach(currency -> {
             if (currencyRatesFromApi.get(currency.getCode()) != null) {
-                CurrencyRate cr = CurrencyRate.builder()
-                        .currency(currency)
-                        .date(LocalDate.now())
-                        .rate(currencyRatesFromApi.get(currency.getCode()))
-                        .build();
+                CurrencyRate cr = buildCurrencyRate(currencyRatesFromApi, currency); //TODO su optionoju isPresent...
                 Optional<CurrencyRate> possibleDuplicate = currencyRateRepository
                         .getCurrencyRateByDateAndCurrencyId(cr.getDate(), cr.getCurrency());
                 if (possibleDuplicate.isEmpty()) {
@@ -54,5 +49,13 @@ public class CurrencyRuntimeService {
             }
         });
         log.info("finished update currency rates");
+    }
+
+    private static CurrencyRate buildCurrencyRate(Map<String, Double> currencyRatesFromApi, Currency currency) {
+        return CurrencyRate.builder()
+                .currency(currency)
+                .date(LocalDate.now())
+                .rate(currencyRatesFromApi.get(currency.getCode()))
+                .build();
     }
 }

@@ -16,7 +16,7 @@ import java.util.TimerTask;
 @EnableScheduling
 public class CurrencyRatesPeriodicalUpdater extends TimerTask  {
 
-    private CurrencyRuntimeService currencyRuntimeService;
+    private final CurrencyRuntimeService currencyRuntimeService;
 
     @Override
     @Scheduled(cron = "0 0 8 * * *")
@@ -27,5 +27,4 @@ public class CurrencyRatesPeriodicalUpdater extends TimerTask  {
             log.error("Can't update currency rates");
         }
     }
-
 }

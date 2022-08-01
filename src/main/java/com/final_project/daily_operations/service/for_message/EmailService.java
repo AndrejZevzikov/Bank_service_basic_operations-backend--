@@ -21,5 +21,4 @@ public class EmailService {
         customMailMessage.setText(content);
         mailSender.send(customMailMessage);
     }
-
 }

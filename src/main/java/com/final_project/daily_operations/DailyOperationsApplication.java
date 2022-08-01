@@ -8,14 +8,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootApplication
 @EntityScan(basePackages = {"com/final_project/daily_operations/*"})
+@EnableCaching
 public class DailyOperationsApplication {
 
     public static void main(String[] args) {

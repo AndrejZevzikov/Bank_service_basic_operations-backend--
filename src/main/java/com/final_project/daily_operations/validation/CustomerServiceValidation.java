@@ -19,9 +19,9 @@ public class CustomerServiceValidation {
     public static final String REGISTRATION_FORM_HAS_SOME_EMPTY_FIELDS = "Registration form has some empty fields";
     public static final String USER_WITH_GIVEN_EMAIL_DOES_NOT_EXIST = "User with email: %s does not exist";
     public static final String UUID_DOES_NOT_EXISTS = "uuid: %s does not exists";
-    private CustomerRepository customerRepository;
+    private final CustomerRepository customerRepository;
 
-    public void isValidRegistrationInformation(Customer customer) throws TakenUsernameException, EmptyFieldsException {
+    public void isValidRegistrationInformation(final Customer customer) throws TakenUsernameException, EmptyFieldsException {
         if (customerRepository.findByUsername(customer.getUsername()).isPresent()) {
             throw new TakenUsernameException(String.format(USERNAME_ALREADY_TAKEN, customer.getUsername()));
         }
@@ -31,16 +31,14 @@ public class CustomerServiceValidation {
         }
     }
 
-    public void isEmailExists(String email) throws EmailDoesNotExistException {
-        if (customerRepository.findByEmail(email).isEmpty()) {
-            log.warn("email {} does not exist", email);
-            throw new EmailDoesNotExistException(String.format(USER_WITH_GIVEN_EMAIL_DOES_NOT_EXIST, email));
-        }
+    public Customer isEmailExists(final String email) throws EmailDoesNotExistException {
+        return customerRepository.findByEmail(email).orElseThrow(
+                () -> new EmailDoesNotExistException(String.format(USER_WITH_GIVEN_EMAIL_DOES_NOT_EXIST, email)));
     }
 
-    public void isUuidAvailable(String uuid) throws UUIDExpiredOrDoesNotExistException {
-        if (customerRepository.findByUuid(uuid).isEmpty()){
-            throw new UUIDExpiredOrDoesNotExistException(String.format(UUID_DOES_NOT_EXISTS,uuid));
+    public void isUuidAvailable(final String uuid) throws UUIDExpiredOrDoesNotExistException {
+        if (customerRepository.findByUuid(uuid).isEmpty()) {
+            throw new UUIDExpiredOrDoesNotExistException(String.format(UUID_DOES_NOT_EXISTS, uuid));
         }
     }
 }

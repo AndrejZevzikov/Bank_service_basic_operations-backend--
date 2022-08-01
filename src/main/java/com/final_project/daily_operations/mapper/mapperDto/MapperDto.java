@@ -103,5 +103,4 @@ public class MapperDto {
                 .map(this::toTransactionDto)
                 .collect(Collectors.toList());
     }
-
 }

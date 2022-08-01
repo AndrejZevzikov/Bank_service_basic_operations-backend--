@@ -1,5 +1,6 @@
 package com.final_project.daily_operations.service.runtime;
 
+import com.final_project.daily_operations.exception.NoSuchObjectInDatabaseException;
 import com.final_project.daily_operations.model.Balance;
 import com.final_project.daily_operations.model.CurrencyRate;
 import com.final_project.daily_operations.repostory.CurrencyRateRepository;
@@ -16,9 +17,11 @@ import java.util.List;
 @Slf4j
 public class CurrencyConverter {
 
+    public static final String CURRENCY_RATES_DOES_NOT_EXIST = "Currency rates does not exist";
     private final CurrencyRateRepository currencyRateRepository;
 
-    public Double convertBalanceByGivenDate(LocalDate date, Balance balance) { //TODO testas
+    public Double convertBalanceByGivenDate(final LocalDate date, final Balance balance)
+            throws NoSuchObjectInDatabaseException { //TODO testas
         if (balance.getCurrency().getId().equals(1L)) {
             return round(balance.getAmount());
         }
@@ -26,11 +29,13 @@ public class CurrencyConverter {
                 .filter(currencyRate -> currencyRate.getCurrency().getId().equals(balance.getCurrency().getId()))
                 .filter(currencyRate -> currencyRate.getDate().isEqual(date) || currencyRate.getDate().isBefore(date))
                 .max(Comparator.comparing(CurrencyRate::getDate))
-                .map(CurrencyRate::getRate).get();
+                .map(CurrencyRate::getRate).orElseThrow(
+                        () -> new NoSuchObjectInDatabaseException(CURRENCY_RATES_DOES_NOT_EXIST));
         return round(balance.getAmount() / rate);
     }
 
-    public Double convertBalanceByGivenDate(LocalDate date, List<Balance> balances) {
+    public Double convertBalanceByGivenDate(final LocalDate date, final List<Balance> balances)
+            throws NoSuchObjectInDatabaseException {
         Double result = 0.0; //TODO stream
         for (Balance balance : balances) {
             result += convertBalanceByGivenDate(date, balance);

@@ -1,9 +1,9 @@
 package com.final_project.daily_operations.controller;
 
 import com.final_project.daily_operations.dto.CurrencyDto;
-import com.final_project.daily_operations.exception.ModelDoesNotExistException;
+import com.final_project.daily_operations.exception.NoSuchObjectInDatabaseException;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
-import com.final_project.daily_operations.service.for_controller.CurrencyService;
+import com.final_project.daily_operations.service.modelService.CurrencyService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +29,9 @@ public class CurrencyController {
     }
 
     @GetMapping("/code/{id}")
-    public ResponseEntity<String> getCurrencyCodeById(@PathVariable(name = "id") Long id) throws ModelDoesNotExistException {
+    public ResponseEntity<String> getCurrencyCodeById(@PathVariable(name = "id") Long id)
+            throws NoSuchObjectInDatabaseException {
         return ResponseEntity.ok()
-                .body(currencyService.getCurrencyCodeById(id).getCode());
+                .body(currencyService.getCurrencyById(id).getCode());
     }
 }

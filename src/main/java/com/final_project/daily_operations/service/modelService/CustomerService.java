@@ -1,7 +1,8 @@
-package com.final_project.daily_operations.service.for_controller;
+package com.final_project.daily_operations.service.modelService;
 
 import com.final_project.daily_operations.exception.*;
 import com.final_project.daily_operations.helper.AccountNumberGenerator;
+import com.final_project.daily_operations.helper.JwtDecoder;
 import com.final_project.daily_operations.helper.RandomGenerator;
 import com.final_project.daily_operations.model.Balance;
 import com.final_project.daily_operations.model.Customer;
@@ -39,15 +40,18 @@ public class CustomerService implements UserDetailsService {
     public static final LocalDate NOW = LocalDate.now();
     public static final String CUSTOMER_DO_NOT_EXIST = "Customer with id %d in doesn't exist";
     public static final String NO_OBJECT_IN_DATABASE_WITH_UUID = "No object in database with uui: ";
-    private CustomerRepository customerRepository;
-    private CustomerServiceValidation customerServiceValidation;
-    private EmailService emailService;
-    private PasswordEncoder passwordEncoder;
-    private AuthorityRepository authorityRepository;
-    private CurrencyRepository currencyRepository;
-    private AccountNumberGenerator accountNumberGenerator;
-    private CurrencyConverter currencyConverter;
-    private BalanceRepository balanceRepository;
+    public static final String ADMIN = "ADMIN";
+    public static final String USER_WITH_GIVEN_USERNAME_DO_NOT_EXIST = "User with username: %s in database doesn't exist";
+    private final CustomerRepository customerRepository;
+    private final CustomerServiceValidation customerServiceValidation;
+    private final EmailService emailService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthorityRepository authorityRepository;
+    private final CurrencyRepository currencyRepository;
+    private final AccountNumberGenerator accountNumberGenerator;
+    private final CurrencyConverter currencyConverter;
+    private final BalanceRepository balanceRepository;
+    private final JwtDecoder jwtDecoder;
 
     public Customer saveNewCustomer(Customer customer) throws TakenUsernameException, EmptyFieldsException {
         customerServiceValidation.isValidRegistrationInformation(customer);
@@ -70,27 +74,29 @@ public class CustomerService implements UserDetailsService {
         return customerRepository.findAll();
     }
 
-    public Customer getCustomerByUsername(String username) throws NoSuchObjectInDatabaseException {
-        log.info("searching username: {}", username);
+    public Customer getCustomerByToken(final String token) throws NoSuchObjectInDatabaseException {
+        return getCustomerByUsername(jwtDecoder.getUsername(token));
+    }
+
+    public Customer getCustomerByUsername(final String username) throws NoSuchObjectInDatabaseException {
         return customerRepository
                 .findByUsername(username)
                 .orElseThrow(() -> new NoSuchObjectInDatabaseException(NO_SUCH_USERNAME_IN_DATABASE));
     }
 
-    public void sendPasswordRecoveryLink(String email) throws EmailDoesNotExistException {
-        customerServiceValidation.isEmailExists(email); //grazint pavaliduota
-        Customer customer = customerRepository.findByEmail(email).get();
+    public void sendPasswordRecoveryLink(final String email) throws EmailDoesNotExistException {
+        Customer customer = customerServiceValidation.isEmailExists(email);
         final String uuid = UUID.randomUUID().toString();
         customer.setUuid(uuid);
         customerRepository.save(customer);
-        String recoveryLink = RECOVERY_LINK + uuid;
+        final String recoveryLink = RECOVERY_LINK + uuid;
         emailService.sendMessage(customer, recoveryLink, RECOVERY_LINK_SUBJECT);
         log.info(String.format("For user %s send recovery url %s", customer.getUsername(), recoveryLink));
     }
 
-    public void sendNewPassword(String uuid) throws UUIDExpiredOrDoesNotExistException, NoSuchObjectInDatabaseException {
+    public void sendNewPassword(final String uuid) throws UUIDExpiredOrDoesNotExistException, NoSuchObjectInDatabaseException {
         customerServiceValidation.isUuidAvailable(uuid);
-        String newPassword = RandomGenerator.getRandomString(10);
+        String newPassword = RandomGenerator.getRandomString(10); //TODO properties failas
         Customer customer = customerRepository.findByUuid(uuid).orElseThrow(
                 () -> new NoSuchObjectInDatabaseException(NO_OBJECT_IN_DATABASE_WITH_UUID + uuid));
         customer.setPassword(passwordEncoder.encode(newPassword));
@@ -99,23 +105,34 @@ public class CustomerService implements UserDetailsService {
         log.info("For user: {} was send new password", customer.getUsername());
     }
 
-    public Double getCustomerTotalAmountInEur(String username) throws NoSuchObjectInDatabaseException {
+    public Double getCustomerTotalAmountInEur(final String username) throws NoSuchObjectInDatabaseException {
         //TODO validations
-        if (getCustomerByUsername(username).getAuthority().getAuthority().equals("ADMIN")) {
+        if (getCustomerByUsername(username).getAuthority().getAuthority().equals(ADMIN)) {
             return currencyConverter.convertBalanceByGivenDate(NOW, balanceRepository.findAll());
         }
         return currencyConverter.convertBalanceByGivenDate(NOW, getCustomerByUsername(username).getBalances());
     }
 
+    public Double getCustomerTotalAmountInEurFromToken(final String token) throws NoSuchObjectInDatabaseException {
+        return getCustomerTotalAmountInEur(jwtDecoder.getUsername(token));
+    }
+
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Customer customer = customerRepository.findByUsername(username).get();
+    public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+        Customer customer;
+        try {
+            customer = customerRepository.findByUsername(username).orElseThrow(
+                    () -> new NoSuchObjectInDatabaseException(String.format(USER_WITH_GIVEN_USERNAME_DO_NOT_EXIST, username)));
+        } catch (NoSuchObjectInDatabaseException e) {
+            log.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
         Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(customer.getAuthority().getAuthority()));
         return new org.springframework.security.core.userdetails.User(customer.getUsername(), customer.getPassword(), authorities);
     }
 
-    public List<Customer> getFilteredListOfCustomers(String phrase) {
+    public List<Customer> getFilteredListOfCustomers(final String phrase) {
         return getAllCustomers().stream()
                 .filter(customer -> customer.getUsername().contains(phrase) ||
                         customer.getFirstName().contains(phrase) ||
@@ -124,14 +141,12 @@ public class CustomerService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-    public List<Customer> deleteCustomerById(Long id) throws NoSuchObjectInDatabaseException {
+    public List<Customer> deleteCustomerById(final Long id) throws NoSuchObjectInDatabaseException {
         Customer customer = customerRepository.findById(id).orElseThrow(
                 () -> new NoSuchObjectInDatabaseException(String.format(CUSTOMER_DO_NOT_EXIST, id)));
-        if (!customer.getAuthority().getAuthority().equals("ADMIN")){
+        if (!customer.getAuthority().getAuthority().equals(ADMIN)) {
             customerRepository.deleteById(id);
         }
         return getAllCustomers();
     }
 }
-
-
