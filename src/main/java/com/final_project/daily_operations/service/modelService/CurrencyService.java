@@ -24,6 +24,9 @@ public class CurrencyService {
         return currencyRepository.findById(id).orElseThrow(
                 () -> new NoSuchObjectInDatabaseException(String.format(CURRENCY_WITH_GIVEN_ID_DOES_NOT_EXIST,id)));
     }
+    public Long getCurrencyIdByCode(final String code) throws NoSuchObjectInDatabaseException {
+        return getCurrencyByCode(code).getId();
+    }
 
     public Currency getCurrencyByCode(final String currencyCode) throws NoSuchObjectInDatabaseException {
         return currencyRepository.findByCode(currencyCode).orElseThrow(

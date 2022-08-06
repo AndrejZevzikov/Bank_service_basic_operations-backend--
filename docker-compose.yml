@@ -1,0 +1,73 @@
+version: "3"
+services:
+  mysqldb:
+    image: mysql:8.0.29
+    ports:
+      - "3307:3306"
+    networks:
+      - quizzz_springmysql-net
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin13
+      - MYSQL_DATABASE=bank
+      - MYSQL_USER=sa
+      - MYSQL_PASSWORD=admin13
+  mysqldb1:
+    image: mysql:8.0.29
+    ports:
+      - "3308:3306"
+    networks:
+      - quizzz_springmysql-net
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin13
+      - MYSQL_DATABASE=loan
+      - MYSQL_USER=sa
+      - MYSQL_PASSWORD=admin13
+  cache:
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - quizzz_springmysql-net
+
+#  front-app:
+#    image: fron:2.2 # 2.1 versija jungiasi viduje containerio su atitinakmais adresais, 2.0(nesuveike patikrint) versija per localhostus
+#    ports:
+#      - "83:80"
+#    networks:
+#      - quizzz_springmysql-net
+#    depends_on:
+#      - back-app
+
+  daily:
+    image: daily:1.7
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      spring_datasource_url: jdbc:mysql://mysqldb:3306/bank?allowPublicKeyRetrieval=true&useSSL=false
+      spring_datasource_username: sa
+      spring_datasource_password: admin13
+      spring_redis_host: cache
+      spring_redis_port: 6379
+    networks:
+      - quizzz_springmysql-net
+    depends_on:
+      - mysqldb
+      - cache
+  loan:
+    image: loans:3.0
+    restart: on-failure
+    ports:
+      - "8081:8081"
+    environment:
+      spring_datasource_url: jdbc:mysql://mysqldb1:3306/loan?allowPublicKeyRetrieval=true&useSSL=false
+      spring_datasource_username: sa
+      spring_datasource_password: admin13
+    networks:
+      - quizzz_springmysql-net
+    depends_on:
+      - mysqldb1
+
+networks:
+  quizzz_springmysql-net:
+    driver: bridge

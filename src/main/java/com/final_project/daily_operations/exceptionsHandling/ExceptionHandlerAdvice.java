@@ -1,9 +1,6 @@
 package com.final_project.daily_operations.exceptionsHandling;
 
-import com.final_project.daily_operations.exception.EmailDoesNotExistException;
-import com.final_project.daily_operations.exception.TakenUsernameException;
-import com.final_project.daily_operations.exception.EmptyFieldsException;
-import com.final_project.daily_operations.exception.UUIDExpiredOrDoesNotExistException;
+import com.final_project.daily_operations.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,6 +32,12 @@ public class ExceptionHandlerAdvice {
     public ResponseEntity<String> handleUuidDoesNotExist(UUIDExpiredOrDoesNotExistException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+    }
+    @ExceptionHandler(InvalidCurrencyException.class)
+    public ResponseEntity<String> handleInvalidCurrency(InvalidCurrencyException e) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(e.getMessage());
     }
 }

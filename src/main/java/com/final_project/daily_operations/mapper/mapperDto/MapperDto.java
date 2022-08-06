@@ -95,6 +95,7 @@ public class MapperDto {
                 .receiverAccountNumber(transaction.getReceiverAccountNumber())
                 .amount(transaction.getAmount())
                 .currencyCode(transaction.getCurrency().getCode())
+                .comment(transaction.getComment())
                 .build();
     }
 

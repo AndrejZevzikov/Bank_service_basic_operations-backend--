@@ -34,4 +34,12 @@ public class CurrencyController {
         return ResponseEntity.ok()
                 .body(currencyService.getCurrencyById(id).getCode());
     }
+
+    @GetMapping("/id/{code}")
+    public ResponseEntity<Long> getCurrencyIdByCode(@PathVariable(name = "code") String code)
+            throws NoSuchObjectInDatabaseException {
+        System.out.println("getting code");
+        return ResponseEntity.ok()
+                .body(currencyService.getCurrencyIdByCode(code));
+    }
 }

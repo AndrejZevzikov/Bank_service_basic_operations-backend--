@@ -20,7 +20,7 @@ public class MapperFromDto {
                 .currency(currencyService.getCurrencyByCode(transactionDto.getCurrencyCode()))
                 .payerAccountNumber(transactionDto.getPayerAccountNumber())
                 .receiverAccountNumber(transactionDto.getReceiverAccountNumber())
-                .isInnerTransaction(false) //TODO pataisyti
+                .comment(transactionDto.getComment())
                 .build();
     }
 }

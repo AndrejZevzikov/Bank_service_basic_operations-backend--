@@ -10,7 +10,7 @@ import com.final_project.daily_operations.repostory.AuthorityRepository;
 import com.final_project.daily_operations.repostory.BalanceRepository;
 import com.final_project.daily_operations.repostory.CurrencyRepository;
 import com.final_project.daily_operations.repostory.CustomerRepository;
-import com.final_project.daily_operations.service.for_message.EmailService;
+import com.final_project.daily_operations.service.message.EmailService;
 import com.final_project.daily_operations.service.runtime.CurrencyConverter;
 import com.final_project.daily_operations.validation.CustomerServiceValidation;
 import lombok.AllArgsConstructor;

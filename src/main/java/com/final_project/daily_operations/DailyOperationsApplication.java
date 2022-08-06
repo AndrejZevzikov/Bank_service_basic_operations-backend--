@@ -3,6 +3,7 @@ package com.final_project.daily_operations;
 import com.final_project.daily_operations.model.*;
 import com.final_project.daily_operations.preparedData.*;
 import com.final_project.daily_operations.repostory.*;
+import com.final_project.daily_operations.service.runtime.CurrencyRuntimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -29,7 +30,7 @@ public class DailyOperationsApplication {
                                  final CurrencyRepository currencyRepository, @Autowired CurrencyPreparedData currencyPreparedData,
                                  final CurrencyRateRepository currencyRateRepository, @Autowired BalancesPreparedData balancesPreparedData,
                                  final BalanceRepository balanceRepository, @Autowired TransactionPreparedData transactionPreparedData,
-                                 final TransactionRepository transactionRepository) {
+                                 final TransactionRepository transactionRepository, CurrencyRuntimeService currencyRuntimeService) {
         return args -> {
             List<Customer> customers = customerPreparedData.setUpCustomers();
             List<News> news = newsPreparedData.setUpNews();
@@ -60,6 +61,7 @@ public class DailyOperationsApplication {
 
             balanceRepository.saveAll(balancesPreparedData.setUpBalances());
             transactionRepository.saveAll(transactionPreparedData.setUpTransactions());
+            currencyRuntimeService.updateCurrencyRatesByGivenDate(LocalDate.of(2022,7,1),LocalDate.of(2022,7,31));
         };
     }
 }

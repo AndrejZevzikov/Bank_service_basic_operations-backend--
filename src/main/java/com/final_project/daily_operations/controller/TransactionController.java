@@ -28,13 +28,19 @@ public class TransactionController {
             throws NoSuchObjectInDatabaseException {
         return ResponseEntity
                 .ok()
-                .body(mapperDto.toTransactionDtoList(transactionService.getTransactions(token)));
+                .body(mapperDto.toTransactionDtoList(transactionService.getTransactionsLimitedByGivenNumber(token,5)));
+    }
+
+    @GetMapping("/all")
+    ResponseEntity<List<TransactionDto>> getAllTransactions(@RequestHeader(AUTHORIZATION) String token)
+            throws NoSuchObjectInDatabaseException {
+        return ResponseEntity.ok().body(mapperDto.toTransactionDtoList(transactionService.getAllTransactions(token)));
     }
 
     @PostMapping
     public ResponseEntity<TransactionDto> makePayment(@RequestHeader(AUTHORIZATION) String token,
                                                       @RequestBody TransactionDto transactionDto)
-            throws InvalidBalanceException, NoSuchObjectInDatabaseException {
+            throws InvalidBalanceException, NoSuchObjectInDatabaseException, InvalidCurrencyException {
         return ResponseEntity
                 .ok()
                 .body(mapperDto.toTransactionDto(transactionService.makePayment(

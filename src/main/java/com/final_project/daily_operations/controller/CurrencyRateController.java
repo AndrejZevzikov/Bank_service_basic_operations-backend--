@@ -1,6 +1,8 @@
 package com.final_project.daily_operations.controller;
 
+import com.final_project.daily_operations.dto.ChartRatesDto;
 import com.final_project.daily_operations.dto.CurrencyRateDto;
+import com.final_project.daily_operations.exception.NoSuchObjectInDatabaseException;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
 import com.final_project.daily_operations.service.modelService.CurrencyRateService;
 import lombok.AllArgsConstructor;
@@ -25,16 +27,23 @@ public class CurrencyRateController { //TODO charta
     private final MapperDto mapperDto;
 
     @GetMapping
-    public ResponseEntity<List<CurrencyRateDto>> getLastCurrencyRates(){
+    public ResponseEntity<List<CurrencyRateDto>> getLastCurrencyRates() throws NoSuchObjectInDatabaseException {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(mapperDto.toCurrencyRateDtoList(currencyRateService.getLastCurrencyRate()));
     }
 
     @GetMapping("/update")
-    public ResponseEntity<List<CurrencyRateDto>> updateLastCurrencyRates() throws IOException {
+    public ResponseEntity<List<CurrencyRateDto>> updateLastCurrencyRates()
+            throws IOException, NoSuchObjectInDatabaseException {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(mapperDto.toCurrencyRateDtoList(currencyRateService.updateLastCurrencyRates()));
+    }
+
+    @GetMapping("/chart_rates")
+    public ResponseEntity<List<ChartRatesDto>> getChartRates() {
+        return ResponseEntity.ok()
+                .body(currencyRateService.getCurrencyRatesForLastMonth());
     }
 }

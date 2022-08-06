@@ -1,5 +1,6 @@
 package com.final_project.daily_operations.service.modelService;
 
+import com.final_project.daily_operations.dto.TransactionDto;
 import com.final_project.daily_operations.exception.*;
 import com.final_project.daily_operations.helper.AccountNumberGenerator;
 import com.final_project.daily_operations.helper.JwtDecoder;
@@ -24,6 +25,7 @@ public class BalanceService {
 
     public static final String ACCOUNT_NUMBER_IN_DATABASE_DOES_NOT_EXIST = "Account number %s in Database does not exist";
     public static final String CURRENCY_DO_NOT_EXIST = "Currency with id %d doesn't exist";
+    public static final String ADMIN = "ADMIN";
     private final BalanceRepository balanceRepository;
     private final CustomerService customerService;
     private final CurrencyRepository currencyRepository;
@@ -31,9 +33,10 @@ public class BalanceService {
     private final AccountNumberGenerator accountNumberGenerator;
     private final JwtDecoder jwtDecoder;
 
-    public List<Balance> getBalances(final String username) throws NoSuchObjectInDatabaseException {
+    public List<Balance> getBalances(final String token) throws NoSuchObjectInDatabaseException {
+        String username = jwtDecoder.getUsername(token);
         String authority = customerService.getCustomerByUsername(username).getAuthority().getAuthority();
-        if (authority.equals("ADMIN")) { //TODO Authority enumas
+        if (authority.equals(ADMIN)) {
             return balanceRepository.findAll();
         }
         return customerService.getCustomerByUsername(username).getBalances();
@@ -53,7 +56,7 @@ public class BalanceService {
                 .currency(currency)
                 .amount(1.0)
                 .build());
-        return getBalances(customer.getUsername());
+        return getBalances(token);
     }
 
     public Balance updatePayerBalance(final Transaction transaction) throws NoSuchObjectInDatabaseException {
@@ -70,5 +73,12 @@ public class BalanceService {
                         ACCOUNT_NUMBER_IN_DATABASE_DOES_NOT_EXIST, transaction.getReceiverAccountNumber())));
         balance.setAmount(balance.getAmount() + transaction.getAmount());
         return balanceRepository.save(balance);
+    }
+
+    public boolean isInnerPayment(Transaction transaction){
+        if (balanceRepository.findByAccountNumber(transaction.getReceiverAccountNumber()).isPresent()){
+            return true;
+        }
+        return false;
     }
 }

@@ -27,4 +27,5 @@ public class Transaction {
     private Currency currency;
     private LocalDate localDate;
     private Boolean isInnerTransaction;
+    private String comment;
 }

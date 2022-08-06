@@ -1,4 +1,4 @@
-package com.final_project.daily_operations.service.for_message;
+package com.final_project.daily_operations.service.message;
 
 import com.final_project.daily_operations.entities.CustomMailMessage;
 import com.final_project.daily_operations.model.Customer;

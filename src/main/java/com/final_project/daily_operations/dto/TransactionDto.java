@@ -16,4 +16,5 @@ public class TransactionDto {
     private Double amount;
     private String currencyCode;
     private LocalDate localDate;
+    private String comment;
 }

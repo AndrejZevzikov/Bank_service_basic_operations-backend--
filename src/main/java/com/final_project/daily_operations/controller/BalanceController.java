@@ -1,6 +1,5 @@
 package com.final_project.daily_operations.controller;
 
-import com.auth0.jwt.JWT;
 import com.final_project.daily_operations.dto.BalanceDto;
 import com.final_project.daily_operations.exception.*;
 import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
@@ -25,17 +24,16 @@ public class BalanceController {
     private final MapperDto mapperDto;
 
     @GetMapping
-    public ResponseEntity<List<BalanceDto>> getMyBalance(@RequestHeader(AUTHORIZATION) String token) throws NoSuchObjectInDatabaseException {
-        String username = JWT.decode(token.substring("Bearer ".length())).getClaim("sub").asString();
-        log.info("searching user with username: {}", username);
+    public ResponseEntity<List<BalanceDto>> getMyBalance(@RequestHeader(AUTHORIZATION) String token)
+            throws NoSuchObjectInDatabaseException {
         return ResponseEntity
                 .ok()
-                .body(mapperDto.toBalanceDtoList(balanceService.getBalances(username)));
+                .body(mapperDto.toBalanceDtoList(balanceService.getBalances(token)));
     }
 
     @PostMapping("/add/{id}")
     public ResponseEntity<List<BalanceDto>> addNewBalance(
-            @RequestHeader(AUTHORIZATION) String token, //TODO exceptionas i herarchija
+            @RequestHeader(AUTHORIZATION) String token,
             @PathVariable(name = "id") Long id) throws InvalidBalanceException, NoSuchObjectInDatabaseException {
         return ResponseEntity
                 .ok()
