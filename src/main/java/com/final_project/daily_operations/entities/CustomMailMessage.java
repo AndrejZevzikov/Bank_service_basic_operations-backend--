@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 @AllArgsConstructor
-public class CustomMailMessage extends SimpleMailMessage {
+public class CustomMailMessage extends SimpleMailMessage { //TODO properties file uzsetinti siunteja
 
 }

@@ -23,4 +23,7 @@ public interface CurrencyRateRepository extends JpaRepository<CurrencyRate, Long
 
     @Query("SELECT c FROM CurrencyRate c WHERE c.date = :date")
     Optional<List<CurrencyRate>> getCurrencyRatesByGiveDate(@Param("date") LocalDate date);
+
+    @Query("SELECT c FROM CurrencyRate c WHERE c.date > :date AND c.currency.id = :id")
+    List<CurrencyRate> getCurrencyRatesAfterGiveDateAndCurrencyId(@Param("date") LocalDate date, @Param("id") Long id);
 }

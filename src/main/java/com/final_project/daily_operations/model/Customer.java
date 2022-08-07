@@ -3,6 +3,7 @@ package com.final_project.daily_operations.model;
 import lombok.*;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -11,13 +12,14 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class Customer {
+public class Customer implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String password;
+//    @Email
     private String email;
     private String firstName;
     private String lastName;

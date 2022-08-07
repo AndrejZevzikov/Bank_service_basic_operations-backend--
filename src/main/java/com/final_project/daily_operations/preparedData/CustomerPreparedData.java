@@ -1,4 +1,4 @@
-package com.final_project.daily_operations.util;
+package com.final_project.daily_operations.preparedData;
 
 import com.final_project.daily_operations.model.Authority;
 import com.final_project.daily_operations.model.Customer;

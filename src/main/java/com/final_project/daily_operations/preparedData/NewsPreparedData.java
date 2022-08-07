@@ -1,4 +1,4 @@
-package com.final_project.daily_operations.util;
+package com.final_project.daily_operations.preparedData;
 
 import com.final_project.daily_operations.model.News;
 import org.springframework.context.annotation.Bean;
@@ -52,6 +52,12 @@ public class NewsPreparedData {
                 .content("Forwarding e-invoices to the bank is a convenient and efficient solution to enable your clients to receive an electronically prepared invoice via their internet bank. It is a suitable solution if you provide services to individuals or businesses that pay your company periodically.")
                 .createDateTime(LocalDateTime.of(2020, 2, 22, 15, 20, 12))
                 .build();
+        News newsNumber7 = News.builder()
+                .imageLink("https://imageio.forbes.com/specials-images/imageserve/6290d2ae6085acdb167f39fc/Generic-British-High-Street-Banks-Sign--UK-Banks-stopping-account-holders-buying/960x0.jpg?format=jpg&width=960")
+                .title("For private banking customers")
+                .content("Private banking service covers all financial needs – from daily banking operations to your personal financial management strategy. The main focus is on the structure of your assets and investments, individual financial decisions.")
+                .createDateTime(LocalDateTime.of(2021, 8, 2, 19, 20, 12))
+                .build();
 
         newsList.add(newsNumber1);
         newsList.add(newsNumber2);
@@ -59,6 +65,7 @@ public class NewsPreparedData {
         newsList.add(newsNumber4);
         newsList.add(newsNumber5);
         newsList.add(newsNumber6);
+        newsList.add(newsNumber7);
         return newsList;
     }
 }

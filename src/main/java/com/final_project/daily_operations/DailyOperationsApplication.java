@@ -1,25 +1,23 @@
 package com.final_project.daily_operations;
 
-import com.final_project.daily_operations.model.CurrencyRate;
-import com.final_project.daily_operations.model.Customer;
-import com.final_project.daily_operations.model.News;
-import com.final_project.daily_operations.repostory.CurrencyRateRepository;
-import com.final_project.daily_operations.repostory.CurrencyRepository;
-import com.final_project.daily_operations.repostory.CustomerRepository;
-import com.final_project.daily_operations.repostory.NewsRepository;
-import com.final_project.daily_operations.util.CurrencyPreparedData;
-import com.final_project.daily_operations.util.CustomerPreparedData;
-import com.final_project.daily_operations.util.NewsPreparedData;
+import com.final_project.daily_operations.model.*;
+import com.final_project.daily_operations.preparedData.*;
+import com.final_project.daily_operations.repostory.*;
+import com.final_project.daily_operations.service.runtime.CurrencyRuntimeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootApplication
+@EntityScan(basePackages = {"com/final_project/daily_operations/*"})
+@EnableCaching
 public class DailyOperationsApplication {
 
     public static void main(String[] args) {
@@ -30,7 +28,9 @@ public class DailyOperationsApplication {
     public CommandLineRunner run(final NewsRepository newsRepository, @Autowired NewsPreparedData newsPreparedData,
                                  final CustomerRepository customerRepository, @Autowired CustomerPreparedData customerPreparedData,
                                  final CurrencyRepository currencyRepository, @Autowired CurrencyPreparedData currencyPreparedData,
-                                 final CurrencyRateRepository currencyRateRepository) {
+                                 final CurrencyRateRepository currencyRateRepository, @Autowired BalancesPreparedData balancesPreparedData,
+                                 final BalanceRepository balanceRepository, @Autowired TransactionPreparedData transactionPreparedData,
+                                 final TransactionRepository transactionRepository, CurrencyRuntimeService currencyRuntimeService) {
         return args -> {
             List<Customer> customers = customerPreparedData.setUpCustomers();
             List<News> news = newsPreparedData.setUpNews();
@@ -49,6 +49,19 @@ public class DailyOperationsApplication {
                             LocalDate.of(2022, 6, 23),
                             1.15,
                             currencyRepository.findById(2L).get())));
+
+            List<Balance> balances = balancesPreparedData.setUpBalances();
+            List<Transaction> transactions = transactionPreparedData.setUpTransactions();
+            transactions.get(0).setCurrency(currencyRepository.findById(2L).get());
+            transactions.get(1).setCurrency(currencyRepository.findById(1L).get());
+            balances.get(0).setCustomer(customerRepository.findById(2L).get());
+            balances.get(0).setCurrency(currencyRepository.findById(2L).get());
+            balances.get(1).setCustomer(customerRepository.findById(2L).get());
+            balances.get(1).setCurrency(currencyRepository.findById(1L).get());
+
+            balanceRepository.saveAll(balancesPreparedData.setUpBalances());
+            transactionRepository.saveAll(transactionPreparedData.setUpTransactions());
+            currencyRuntimeService.updateCurrencyRatesByGivenDate(LocalDate.of(2022,7,1),LocalDate.of(2022,7,31));
         };
     }
 }

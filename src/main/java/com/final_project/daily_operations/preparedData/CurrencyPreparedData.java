@@ -1,4 +1,4 @@
-package com.final_project.daily_operations.util;
+package com.final_project.daily_operations.preparedData;
 
 import com.final_project.daily_operations.model.Currency;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +20,15 @@ public class CurrencyPreparedData {
                 .code("USD")
                 .build();
 
-        return List.of(eur, usd);
+        Currency chf = Currency.builder()
+                .name("Switzerland frank")
+                .code("CHF")
+                .build();
+        Currency cad = Currency.builder()
+                .name("Canadian dollar")
+                .code("CAD")
+                .build();
+
+        return List.of(eur, usd, chf, cad);
     }
 }

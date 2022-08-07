@@ -1,8 +1,10 @@
 package com.final_project.daily_operations.controller;
 
+import com.final_project.daily_operations.dto.ChartRatesDto;
 import com.final_project.daily_operations.dto.CurrencyRateDto;
-import com.final_project.daily_operations.model.CurrencyRate;
-import com.final_project.daily_operations.service.for_controller.CurrencyRateService;
+import com.final_project.daily_operations.exception.NoSuchObjectInDatabaseException;
+import com.final_project.daily_operations.mapper.mapperDto.MapperDto;
+import com.final_project.daily_operations.service.modelService.CurrencyRateService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,21 +22,28 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200")
 @AllArgsConstructor
 @Slf4j
-public class CurrencyRateController {
-    private CurrencyRateService currencyRateService;
-    private CurrencyRateDto currencyRateDto;
+public class CurrencyRateController { //TODO charta
+    private final CurrencyRateService currencyRateService;
+    private final MapperDto mapperDto;
 
     @GetMapping
-    public ResponseEntity<List<CurrencyRateDto>> getLastCurrencyRates(){
+    public ResponseEntity<List<CurrencyRateDto>> getLastCurrencyRates() throws NoSuchObjectInDatabaseException {
         return ResponseEntity
-                .status(HttpStatus.FOUND)
-                .body(currencyRateDto.getListOfCurrencyRateDto(currencyRateService.getLastCurrencyRate()));
+                .status(HttpStatus.OK)
+                .body(mapperDto.toCurrencyRateDtoList(currencyRateService.getLastCurrencyRate()));
     }
 
     @GetMapping("/update")
-    public ResponseEntity<List<CurrencyRateDto>> updateLastCurrencyRates() throws IOException {
+    public ResponseEntity<List<CurrencyRateDto>> updateLastCurrencyRates()
+            throws IOException, NoSuchObjectInDatabaseException {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(currencyRateDto.getListOfCurrencyRateDto(currencyRateService.updateLastCurrencyRates()));
+                .body(mapperDto.toCurrencyRateDtoList(currencyRateService.updateLastCurrencyRates()));
+    }
+
+    @GetMapping("/chart_rates")
+    public ResponseEntity<List<ChartRatesDto>> getChartRates() {
+        return ResponseEntity.ok()
+                .body(currencyRateService.getCurrencyRatesForLastMonth());
     }
 }

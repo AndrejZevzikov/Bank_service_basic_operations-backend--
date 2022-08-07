@@ -12,15 +12,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
 
@@ -61,10 +58,39 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         customAuthenticationFilter.setFilterProcessesUrl("/customer/login");
         http.sessionManagement().sessionCreationPolicy(STATELESS);
         http.authorizeHttpRequests()
-                .antMatchers("/customer/login/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/","/news/**","/**","/customer/forgot/**").permitAll()
-                .antMatchers(HttpMethod.POST,"/customer","customer/login/**","/customer/save").permitAll()
-                .antMatchers("/admin").hasAnyAuthority("ADMIN")
+                .antMatchers(HttpMethod.POST,
+                        "customer/login/**",
+                        "/customer/save").permitAll()
+                .antMatchers(HttpMethod.GET,
+                        "/",
+                        "/news/**",
+                        "/currency_rates",
+                        "/currency_rates/chart_rates",
+                        "/currency/code/**",
+                        "/currency/id/**",
+                        "/currency",
+                        "/customer/forgot/**",
+                        "/customer/userWithToken",
+                        "/customer/login/**",
+                        "/customer/recovery/**"
+                        ).permitAll()
+                .antMatchers(HttpMethod.GET,
+                        "/currency_rates/update",
+                        "/balance/all",
+                        "/customer/all",
+                        "/customer/search/**",
+                        "/customer/delete/**").hasAnyAuthority("ADMIN")
+                .antMatchers(HttpMethod.GET,
+                        "/customer/valid",
+                        "customer/total_balance",
+                        "/balance/my",
+                        "/transactions",
+                        "/customer/get",
+                        "/transactions",
+                        "/transactions/all").hasAnyAuthority("ADMIN", "CLIENT")
+                .antMatchers(HttpMethod.POST,
+                        "/balance/add/**",
+                        "/transactions").hasAnyAuthority("ADMIN", "CLIENT")
                 .anyRequest()
                 .authenticated()
                 .and()
@@ -75,7 +101,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.addFilter(customAuthenticationFilter);
         http.addFilterBefore(new CustomAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class);
-
     }
 
     @Override
@@ -88,18 +113,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200","http://localhost:8081","http://loan:8081"));
         configuration.setAllowCredentials(true);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type","access_token", "refresh_token"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type", "access_token", "refresh_token"));
         configuration.setExposedHeaders(Arrays.asList("access_token", "refresh_token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
-
-
 }

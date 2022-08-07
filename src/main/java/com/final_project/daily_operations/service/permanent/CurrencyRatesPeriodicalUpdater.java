@@ -1,5 +1,6 @@
 package com.final_project.daily_operations.service.permanent;
 
+import com.final_project.daily_operations.exception.NoSuchObjectInDatabaseException;
 import com.final_project.daily_operations.service.runtime.CurrencyRuntimeService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,18 +15,17 @@ import java.util.TimerTask;
 @AllArgsConstructor
 @Slf4j
 @EnableScheduling
-public class CurrencyRatesPeriodicalUpdater extends TimerTask implements PeriodicalUpdate {
+public class CurrencyRatesPeriodicalUpdater extends TimerTask  {
 
-    private CurrencyRuntimeService currencyRuntimeService;
+    private final CurrencyRuntimeService currencyRuntimeService;
 
     @Override
     @Scheduled(cron = "0 0 8 * * *")
     public void run() {
         try {
             currencyRuntimeService.updateCurrentCurrencyRates();
-        } catch (IOException e) {
+        } catch (IOException | NoSuchObjectInDatabaseException e ) {
             log.error("Can't update currency rates");
         }
     }
-
 }

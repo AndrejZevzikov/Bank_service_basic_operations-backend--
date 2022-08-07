@@ -11,7 +11,7 @@ public class NewsServiceValidation {
 
     public static final String CAN_T_GET_ANY_NEWS_RECORDS_FROM_DATABASE = "Can't get any news records from database";
 
-    public void isAnyNewInDBExists(List<News> news) throws NoNewsInDatabase {
+    public void isAnyNewInDBExists(final List<News> news) throws NoNewsInDatabase {
         if (news.size() == 0) throw new NoNewsInDatabase(CAN_T_GET_ANY_NEWS_RECORDS_FROM_DATABASE);
     }
 }
